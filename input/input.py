@@ -5,16 +5,13 @@ import json
 path_input_excel = './input/input.xlsx'
 path_configuration_excel = 'configuration/excel.json'
 
+'''
+In this class we get all the information, from excel and maybe OutSystems.
+'''
 class Input:
-  def __init__(self, num_tecnicos, num_projetos):
-    self.num_tecnicos = num_tecnicos
-    self.num_projetos = num_projetos
-'''
-p1 = Person("John", 36)
+  def __init__(self):
+    self.excel_information = None
 
-print(p1.name)
-print(p1.age) 
-'''
 def read_json(path_file : str):
     f = open(path_file)
     
@@ -26,5 +23,6 @@ def read_json(path_file : str):
 
 def read_input():
     excel_configuration = read_json(path_file=path_configuration_excel)
-    read_excel(path_excel_input=path_input_excel, configuration=excel_configuration)
-    return
+    input = Input()
+    input.excel_information = read_excel(path_excel_input=path_input_excel, configuration=excel_configuration)
+    return input
