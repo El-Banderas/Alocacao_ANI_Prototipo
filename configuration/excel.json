@@ -1,0 +1,11 @@
+{
+
+"general_data" : {
+    "num_technician" : "Compatibilidade/C2",
+    "num_projects" : "Compatibilidade/C1"
+},
+"compatibility": "Compatibilidade/C6",
+"technician": {
+    "service_year" : "AnosServicos/B2"
+}
+}
