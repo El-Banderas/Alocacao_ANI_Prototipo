@@ -11,6 +11,8 @@ class Excel_Information:
         self.compatibilities = []
         # Each position corresponds to the number of technician
         self.tecn_years_service = []
+        # Duration of each task
+        self.duration_tasks = []
 
     def split_cell_position(self, cell_position : str):
         return cell_position.split("/")
@@ -44,9 +46,9 @@ class Excel_Information:
                 this_technician_projects = []
                 for current_project in range(self.num_projects+1):
                     current_col = row_index_start+current_project
-                    this_technician_projects.append(sheet.cell(row=current_row, column=current_col).value)
+                    this_technician_projects.append(0.1*(sheet.cell(row=current_row, column=current_col).value))
                     #print(f"Current position {current_row} / {current_col}:   {sheet.cell(row=current_row, column=current_col).value}")
-                    print(f"Aptidão tecn: {current_tecn+1} | proj : {current_project+1} : {sheet.cell(row=current_row, column=current_col).value}")
+                    print(f"Aptidão tecn: {current_tecn+1} | proj : {current_project+1} : {0.1*sheet.cell(row=current_row, column=current_col).value}")
                 self.compatibilities.append(this_technician_projects)
 
         
@@ -58,8 +60,18 @@ class Excel_Information:
         row_index_start = int(cell[1:]) 
         for current_tecn in range(self.num_technician+1):
             self.tecn_years_service.append(sheet.cell(row=row_index_start+current_tecn, column=column_index_start).value)
-        print("Years service")
-        print(self.tecn_years_service)
+    
+    def get_duration_works(self):
+        sheetname, cell = self.split_cell_position(cell_position=self.configuration["tasks"]["duration"])
+
+        sheet = self.get_sheet_by_name(sheetname=sheetname)
+        column_index_start = ord(cell[0].lower())-96 
+        row_index_start = int(cell[1:]) 
+        for current_project in range(self.num_projects+1):
+            self.duration_tasks.append(sheet.cell(row=row_index_start, column=column_index_start+current_project ).value)
+        print("Tamanhos projetos")
+        print(self.duration_tasks)
+
 
 def read_excel(path_excel_input : str, configuration : dict):
 
@@ -69,5 +81,6 @@ def read_excel(path_excel_input : str, configuration : dict):
     excel_information.num_projects = excel_information.get_value( cell_position=configuration["general_data"]["num_projects"])
     excel_information.get_compability_matrix()
     excel_information.get_years_service()
+    excel_information.get_duration_works()
     return excel_information
     

@@ -7,5 +7,8 @@
 "compatibility": "Compatibilidade/C6",
 "technician": {
     "service_year" : "AnosServicos/B2"
+},
+"tasks": {
+    "duration" : "Projeto/B2"
 }
 }
