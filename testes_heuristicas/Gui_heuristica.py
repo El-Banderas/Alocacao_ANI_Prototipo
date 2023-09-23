@@ -1,29 +1,12 @@
-from input.input import Input
-
 import pandas as pd
 import numpy as np
 
-'''
-This methods calculates the initial heuristic for the attribution. 
-The two methods are:
-works: list of durations of each work. 
-aptitudes_matrix: matrix that correlates the cost of workers to complete the task. It follows the same structure as the excel file.
-                  Each line/row represents one technique and the columns are the tasks.
-'''
-def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
-
-    num_tasks = len(works)
-    df_expected_task_time = pd.DataFrame(works)
-
+# As últimas duas variáveis deviam ser lengths, mas como isto é para testes, não me apeteceu procurar
+# Procurar como se calcula o comprimento de dataframes (eu não costumo usar dataframes).
+def gui_heuristica(df_expected_task_time, df_aptitude_between_task_machine, num_tasks, machine_quantity):
     # Create allocation recorder for solution interpretation
     solution = np.full((num_tasks, 1), -1)
     df_solution = pd.DataFrame(solution)
-
-    # Define the number of machines or workers
-    machine_quantity = len(aptitudes_matrix)
-    df_aptitude_between_task_machine = pd.DataFrame(aptitudes_matrix)
-
-
     # Calculate task time per machine
 
     df_reciprocral_aptitude_between_task_machine = 1 / df_aptitude_between_task_machine
@@ -82,16 +65,7 @@ def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
 
         Load_Objective = df_load_per_machine.max().max()
 
-    '''
-    print(df_solution)
-    print(df_load_per_machine)
-    print(Load_Objective)
-    '''
-    return df_load_per_machine
+    return df_load_per_machine.T.std().values[0]
 
 
-
-def main_solver(input : Input):
-    print("Starting heuristic")
-    attribution = heuristic_test(works=input.excel_information.duration_tasks, aptitudes_matrix=input.excel_information.compatibilities)
-    return attribution
+   

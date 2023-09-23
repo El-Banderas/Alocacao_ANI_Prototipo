@@ -2,7 +2,6 @@ from input.read_excel import read_excel
 import json
 
 # Paths are relative to main file
-path_input_excel = './input/input.xlsx'
 path_configuration_excel = 'configuration/excel.json'
 
 '''
@@ -21,8 +20,8 @@ def read_json(path_file : str):
 
     return data
 
-def read_input():
+def read_input(path_excel : str):
     excel_configuration = read_json(path_file=path_configuration_excel)
     input = Input()
-    input.excel_information = read_excel(path_excel_input=path_input_excel, configuration=excel_configuration)
+    input.excel_information = read_excel(path_excel_input=path_excel, configuration=excel_configuration)
     return input

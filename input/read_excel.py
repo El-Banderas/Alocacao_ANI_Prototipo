@@ -82,5 +82,7 @@ def read_excel(path_excel_input : str, configuration : dict):
     excel_information.get_compability_matrix()
     excel_information.get_years_service()
     excel_information.get_duration_works()
+
+    excelFile.save(path_excel_input)
     return excel_information
     
