@@ -12,15 +12,16 @@ aptitudes_matrix: matrix that correlates the cost of workers to complete the tas
 '''
 def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
 
-    num_tasks = len(works)
     df_expected_task_time = pd.DataFrame(works)
-
+    num_tasks = len(works)
     # Create allocation recorder for solution interpretation
     solution = np.full((num_tasks, 1), -1)
     df_solution = pd.DataFrame(solution)
 
     # Define the number of machines or workers
     machine_quantity = len(aptitudes_matrix)
+
+
     df_aptitude_between_task_machine = pd.DataFrame(aptitudes_matrix)
 
 
@@ -82,12 +83,13 @@ def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
 
         Load_Objective = df_load_per_machine.max().max()
 
+
     '''
     print(df_solution)
     print(df_load_per_machine)
     print(Load_Objective)
     '''
-    return df_load_per_machine
+    return df_solution.values
 
 
 
