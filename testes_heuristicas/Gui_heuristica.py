@@ -64,7 +64,9 @@ def gui_heuristica(df_expected_task_time, df_aptitude_between_task_machine, num_
         df_filter_list.iat[j, 0] = df_net_gain_string_sorted.iat[0, 0]
 
         Load_Objective = df_load_per_machine.max().max()
-
+    print("Solution GUI")
+    print(solution)
+    print(df_load_per_machine)
     return df_load_per_machine.T.std().values[0]
 
 
