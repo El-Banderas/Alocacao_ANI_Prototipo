@@ -4,9 +4,23 @@ import sys
 import pandas as pd
 import statistics
 
+df_aptitude_between_task_machine_matrix = [ 
+[7,20,12,3,	11,	16],
+[10,8,6,22,8,20],
+[10,17,3,15,	5,	18],
+[13,6,20,20,	16,	10],
+[6,14,17,5,	16,	9],
+[16,10,16,21,10,13],
+[12,5,14,2,3,4],
+[11,7,16,20,19,	13],
+[20,14,	4,12,2,11],
+[14,13,14,22,5,21]
+    ]
+
+df_aptitude_between_task_machine = pd.DataFrame(df_aptitude_between_task_machine_matrix)
 
 class Machine:
-    def __init__(self, machine_id : int, df_aptitude_between_task_machine):
+    def __init__(self, machine_id : int, matrix, num_tasks : int):
         self.machine_id = machine_id
         self.attributed_tasks = []
         # We store the costs of tasks in this macine
@@ -76,27 +90,12 @@ def get_load_per_machine(machines : list[Machine], df_expected_task_time):
         machines_costs.append(total_cost_this_machine)
     return machines_costs
 
-def convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity):
-    rows = []
-    for task in range(num_tasks):
-        this_task_cost = df_task_time.iloc[task]
-        costs_machines_this_works = []
-        for machine in range(machine_quantity):
-            this_aptitude = df_aptitudes.iloc[task, machine]
-            this_cost = (1 / this_aptitude) * this_task_cost
-            costs_machines_this_works.append( this_cost.values[0])
-        rows.append(costs_machines_this_works)
-    return  pd.DataFrame(rows)
-    
 
-def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity):
-    df_aptitude_between_task_machine = convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity)
-    
-
+def carolina_heuristica(df_aptitude_between_task_machine, num_tasks, machine_quantity):
     # Create random attribution for all machines
     machines = []
     for i in range(machine_quantity):
-       machines.append(Machine(machine_id=i,  df_aptitude_between_task_machine=df_aptitude_between_task_machine))
+       machines.append(Machine(machine_id=i,  matrix=df_aptitude_between_task_machine, num_tasks=num_tasks))
     
     already_attributed_tasks = set()
     solution = []
@@ -107,10 +106,13 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity)
         task_id = this_machine.get_more_heavy_task(already_attributed_tasks=already_attributed_tasks)
         already_attributed_tasks.add(task_id)
         attributed_machine = find_best_fit_for_task(machines=machines, df_aptitude_between_task_machine=df_aptitude_between_task_machine, n_machines=machine_quantity, task_id=task_id)
-        #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
+        print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
         solution.insert(task_id, attributed_machine)
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
+    print("Solution Carol")
+    print(solution)
     #print(load_per_machine)
     return solution
         
  
+carolina_heuristica(df_aptitude_between_task_machine=df_aptitude_between_task_machine, num_tasks=10, machine_quantity=6)
