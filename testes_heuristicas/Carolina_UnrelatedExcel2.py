@@ -3,6 +3,19 @@ import numpy as np
 import sys
 import pandas as pd
 import statistics
+df_aptitude_between_task_machine_matrix = [ 
+[7,20,12,3,	11,	16],
+[10,8,6,22,8,20],
+[10,17,3,15,	5,	18],
+[13,6,20,20,	16,	10],
+[6,14,17,5,	16,	9],
+[16,10,16,21,10,13],
+[12,5,14,2,3,4],
+[11,7,16,20,19,	13],
+[20,14,	4,12,2,11],
+[14,13,14,22,5,21]
+    ]
+
 
 
 class Machine:
@@ -90,8 +103,8 @@ def convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity):
     
 
 def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity):
-    df_aptitude_between_task_machine = convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity)
-    #df_aptitude_between_task_machine = pd.DataFrame(df_aptitudes)
+    #df_aptitude_between_task_machine = convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity)
+    df_aptitude_between_task_machine = pd.DataFrame(df_aptitudes)
 
 
     # Create random attribution for all machines
@@ -108,10 +121,34 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity)
         task_id = this_machine.get_more_heavy_task(already_attributed_tasks=already_attributed_tasks)
         already_attributed_tasks.add(task_id)
         attributed_machine = find_best_fit_for_task(machines=machines, df_aptitude_between_task_machine=df_aptitude_between_task_machine, n_machines=machine_quantity, task_id=task_id)
-        #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
+        print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
         #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id  , " : ", task_id , " -> ", attributed_machine)
         solution[task_id] =  attributed_machine
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
     #print(load_per_machine)
     return solution
         
+sol = carolina_heuristica(df_aptitude_between_task_machine_matrix, None, 10,6)
+print("Sol")
+print(sol)
+'''
+per_machines = {}
+for k, v in sol.items():
+    if v+1 in per_machines:
+        per_machines[v+1].append(k+1) 
+    else:
+        per_machines[v+1] = [k+1]
+print(per_machines)
+#sol = list(map(lambda x: x + 1, sol))
+#print(sol)
+'''
+def calculate_std(solution : list[int], df_expected_time, df_aptitude):
+    costs_per_machine = [0] * machine_quantity
+    for current_task in range(len(solution)):
+        task_length = df_expected_time.loc[current_task]
+        this_machine = solution[current_task]
+        this_aptitude = df_aptitude.iat[current_task, this_machine ]
+        costs_per_machine[this_machine] = costs_per_machine[this_machine] + (task_length / this_aptitude  )
+
+    return np.std(costs_per_machine)
+  

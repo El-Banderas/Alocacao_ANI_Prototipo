@@ -2,8 +2,21 @@ import pandas as pd
 import numpy as np
 
 
-def Renan_heuristic(df_expected_task_time, df_task_performance , num_tasks, machine_quantity):
+def convert_input(df_aptitudes, num_tasks, machine_quantity):
+    rows = []
+    for task in range(num_tasks):
+        costs_machines_this_works = []
+        for machine in range(machine_quantity):
+            this_aptitude = df_aptitudes.iloc[task, machine]
+            this_cost = (1 / this_aptitude) 
+            costs_machines_this_works.append( this_cost)
+        rows.append(costs_machines_this_works)
+    return  pd.DataFrame(rows)
+    
 
+
+def Renan_heuristic(df_expected_task_time, df_task_performance , num_tasks, machine_quantity):
+    df_task_performance = convert_input(df_aptitudes=df_task_performance, num_tasks=num_tasks, machine_quantity=machine_quantity)
     # Calculate the median of task performance
     median = df_task_performance.median().median()
     # Initialize an empty DataFrame to store activity allocation
