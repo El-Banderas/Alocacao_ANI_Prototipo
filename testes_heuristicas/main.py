@@ -42,33 +42,39 @@ def calculate_std(solution : list[int], df_expected_time, df_aptitude):
         this_machine = solution[current_task]
         this_aptitude = df_aptitude.iat[current_task, this_machine ]
         costs_per_machine[this_machine] = costs_per_machine[this_machine] + (task_length / this_aptitude  )
-
-    return np.std(costs_per_machine)
+    return (np.std(costs_per_machine), sum(costs_per_machine[0]))
   
 def zip_list_of_lists(solution : list[int]):
     return [element for nestedlist in solution for element in nestedlist]
 
 def main():
-    results = {"Gui" : [], "Carolina" : [], "Renan" : []}
+    results_std = {"Gui" : [], "Carolina" : [], "Renan" : []}
+    results_total_cost = {"Gui" : [], "Carolina" : [], "Renan" : []}
     for interation in range(num_interations):
         (df_task_time, df_aptitudes) = generate_input()
         #(df_task_time, df_aptitudes) = carol_input()
         solution_Carol = carolina_heuristica(df_task_time=df_task_time, df_aptitudes=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
-        results["Carolina"].append(calculate_std(solution=solution_Carol, df_expected_time=df_task_time, df_aptitude=df_aptitudes))
+        (std, total_cost ) = calculate_std(solution=solution_Carol, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
+        results_std["Carolina"].append(std)
+        results_total_cost["Carolina"].append(total_cost)
 
         solution_Gui = gui_heuristica(df_expected_task_time=df_task_time, df_aptitude_between_task_machine=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
         solution_Gui = zip_list_of_lists(solution=solution_Gui)
-        results["Gui"].append(calculate_std(solution=solution_Gui, df_expected_time=df_task_time, df_aptitude=df_aptitudes))
+        (std, total_cost ) = calculate_std(solution=solution_Gui, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
+        results_std["Gui"].append(std)
+        results_total_cost["Gui"].append(total_cost)
 
         solution_Renan = Renan_heuristic(df_expected_task_time=df_task_time, df_task_performance =df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
-        results["Renan"].append(calculate_std(solution=solution_Renan, df_expected_time=df_task_time, df_aptitude=df_aptitudes))
+        (std, total_cost ) = calculate_std(solution=solution_Renan, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
+        results_std["Renan"].append(std)
+        results_total_cost["Renan"].append(total_cost)
         #print(std_gui)
         #results["Gui"].append(std_gui)
     print("Results")
-    print(results)
-    for x, y in results.items():
+    for x, y in results_std.items():
         if len(y) > 0:
-            print(x , ": ", mean(y))
+            print(x , "[std]: ", mean(y))
+            print(x , "[total cost]: ", mean(results_total_cost[x]))
 
 
 main()
