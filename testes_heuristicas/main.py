@@ -5,17 +5,18 @@ from statistics import mean
 from Gui_heuristica import gui_heuristica
 from Carolina_Unrelated import carolina_heuristica
 from Renan import Renan_heuristic
+from Write_output import write_output
+import functools
 
 # Tests variables
-num_interations = 10
+num_interations = 30
 
 # Input variables
 min_task_length = 300
 max_task_length = 700
-num_tasks = 25
 machine_quantity = 5
 
-def generate_input():
+def generate_input(num_tasks : int):
 
     # Define the number tasks
     # Create a DataFrame with random values of task length
@@ -35,6 +36,16 @@ def generate_input():
 
     return (df_expected_task_time, df_aptitude_between_task_machine)
 
+def calculate_that_column(costs_per_machine : dict):
+    costs_per_machine = list(map(lambda n : n.values[0], costs_per_machine))
+
+    max_cost = max(costs_per_machine)
+    differences = 0
+    for i in range(len(costs_per_machine)):
+        differences += (max_cost - costs_per_machine[i])
+    return differences
+    
+
 def calculate_std(solution : list[int], df_expected_time, df_aptitude):
     costs_per_machine = [0] * machine_quantity
     for current_task in range(len(solution)):
@@ -42,39 +53,48 @@ def calculate_std(solution : list[int], df_expected_time, df_aptitude):
         this_machine = solution[current_task]
         this_aptitude = df_aptitude.iat[current_task, this_machine ]
         costs_per_machine[this_machine] = costs_per_machine[this_machine] + (task_length / this_aptitude  )
-    return (np.std(costs_per_machine), sum(costs_per_machine[0]))
+    differences = calculate_that_column(costs_per_machine=costs_per_machine)
+    return (np.std(costs_per_machine), sum(costs_per_machine[0]), differences)
   
 def zip_list_of_lists(solution : list[int]):
     return [element for nestedlist in solution for element in nestedlist]
 
-def main():
+def main_num_tasks(num_tasks):
     results_std = {"Gui" : [], "Carolina" : [], "Renan" : []}
     results_total_cost = {"Gui" : [], "Carolina" : [], "Renan" : []}
+    results_differences = {"Gui" : [], "Carolina" : [], "Renan" : []}
     for interation in range(num_interations):
-        (df_task_time, df_aptitudes) = generate_input()
+        (df_task_time, df_aptitudes) = generate_input(num_tasks=num_tasks)
         #(df_task_time, df_aptitudes) = carol_input()
         solution_Carol = carolina_heuristica(df_task_time=df_task_time, df_aptitudes=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
-        (std, total_cost ) = calculate_std(solution=solution_Carol, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
+        (std, total_cost , differences) = calculate_std(solution=solution_Carol, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
         results_std["Carolina"].append(std)
         results_total_cost["Carolina"].append(total_cost)
+        results_differences["Carolina"].append(differences)
 
         solution_Gui = gui_heuristica(df_expected_task_time=df_task_time, df_aptitude_between_task_machine=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
         solution_Gui = zip_list_of_lists(solution=solution_Gui)
-        (std, total_cost ) = calculate_std(solution=solution_Gui, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
+        (std, total_cost, differences ) = calculate_std(solution=solution_Gui, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
         results_std["Gui"].append(std)
+        results_differences["Gui"].append(differences)
         results_total_cost["Gui"].append(total_cost)
 
         solution_Renan = Renan_heuristic(df_expected_task_time=df_task_time, df_task_performance =df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
-        (std, total_cost ) = calculate_std(solution=solution_Renan, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
-        results_std["Renan"].append(std)
+        (std, total_cost, differences ) = calculate_std(solution=solution_Renan, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
+        results_differences["Renan"].append(differences)
         results_total_cost["Renan"].append(total_cost)
+        results_std["Renan"].append(std)
         #print(std_gui)
         #results["Gui"].append(std_gui)
-    print("Results")
-    for x, y in results_std.items():
-        if len(y) > 0:
-            print(x , "[std]: ", mean(y))
-            print(x , "[total cost]: ", mean(results_total_cost[x]))
+    return (results_std, results_total_cost, results_differences)
+
+
+def main():
+    pair_small = main_num_tasks(num_tasks=25)
+    pair_medium = main_num_tasks(num_tasks=50)
+    pair_large = main_num_tasks(num_tasks=100)
+    write_output(pair_small=pair_small, pair_medium=pair_medium, pair_large=pair_large, iteration=num_interations )
+    #write_output(pair_small=pair_small, pair_medium=None, pair_large=None, iteration=num_interations )
 
 
 main()
