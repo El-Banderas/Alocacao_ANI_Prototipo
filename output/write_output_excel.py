@@ -18,7 +18,7 @@ def write_attribution(excel_workbook, attribution : list[int]):
     print(attribution)
     for task in range(len(attribution)):
         output_sheet.cell(row=2, column=task+2).value = task
-        output_sheet.cell(row=3, column=task+2).value = attribution[task][0]
+        output_sheet.cell(row=3, column=task+2).value = attribution[task]
         output_sheet.cell(row=2, column=task+2).border = thin_border
         output_sheet.cell(row=3, column=task+2).border = thin_border
 

@@ -1,5 +1,5 @@
 from input.input import Input
-
+from solver.Carolina_Unrelated import carolina_heuristica
 import pandas as pd
 import numpy as np
 
@@ -95,5 +95,8 @@ def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
 
 def main_solver(input : Input):
     print("Starting heuristic")
-    attribution = heuristic_test(works=input.excel_information.duration_tasks, aptitudes_matrix=input.excel_information.compatibilities)
+    #attribution = heuristic_test(works=input.excel_information.duration_tasks, aptitudes_matrix=input.excel_information.compatibilities)
+    df_aptitudes = pd.DataFrame(input.excel_information.compatibilities)
+    df_task_time = pd.DataFrame(input.excel_information.duration_tasks)
+    attribution = carolina_heuristica(df_aptitudes=df_aptitudes, df_task_time=df_task_time, num_tasks=input.excel_information.num_projects , machine_quantity=input.excel_information.num_technician )
     return attribution
