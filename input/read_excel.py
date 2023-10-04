@@ -77,8 +77,8 @@ def read_excel(path_excel_input : str, configuration : dict):
 
     excelFile = load_workbook(filename = path_excel_input, data_only=True)
     excel_information = Excel_Information(excel_file=excelFile, configuration=configuration)
-    excel_information.num_technician = excel_information.get_value( cell_position=configuration["general_data"]["num_technician"])
-    excel_information.num_projects = excel_information.get_value( cell_position=configuration["general_data"]["num_projects"])
+    excel_information.num_technician = excel_information.get_value( cell_position=configuration["general_data"]["num_technician"])  -1
+    excel_information.num_projects = excel_information.get_value( cell_position=configuration["general_data"]["num_projects"]) -1
     excel_information.get_compability_matrix()
     excel_information.get_years_service()
     excel_information.get_duration_works()

@@ -17,8 +17,8 @@ def write_attribution(excel_workbook, attribution : list[int]):
     print(type(attribution))
     print(attribution)
     for task in range(len(attribution)):
-        output_sheet.cell(row=2, column=task+2).value = task
-        output_sheet.cell(row=3, column=task+2).value = attribution[task]
+        output_sheet.cell(row=2, column=task+2).value = task+1
+        output_sheet.cell(row=3, column=task+2).value = attribution[task]+1
         output_sheet.cell(row=2, column=task+2).border = thin_border
         output_sheet.cell(row=3, column=task+2).border = thin_border
 
@@ -26,7 +26,7 @@ def write_attribution(excel_workbook, attribution : list[int]):
 # The output to be written is a list of ints, saying what technician do what job.
 def write_output(output : list[int], excel_path : str):
  
-    print("Starting writing output")
+    print("Starting writing output, size: ", len(output))
     output_excel = Workbook()
     
     write_attribution(excel_workbook=output_excel, attribution=output)
