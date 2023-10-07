@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
 import TechMain from './TechnicianPage/TechnicianMain'
-import NoPage from './NoPage'
 import LandPage from './LandPage/LandPage'
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -23,9 +22,9 @@ function App() {
   }
 
   const technicians = {
-    "Tec1": ["Task1", "Task2", "Task3", "Task4"],
-    "Tec2": ["Task5", "Task6", "Task7", "Task8"],
-    "Tec3": ["Task9", "Task10", "Task11"]
+    "Tec1": ["Task3", "Task5", "Task8", "Task9"],
+    "Tec2": ["Task1", "Task2", "Task4", "Task6"],
+    "Tec3": ["Task7", "Task10", "Task11"]
   }
 
   const getInput = () => {
@@ -49,9 +48,11 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandPage input={getInput()}/>}></Route>
-            <Route path="b" element={<TechMain name={currentTech} listTasks={getTasksTech(currentTech)} />} />
+          <Route path="/" element={<LandPage />}>
+            <Route index element={<TechMain name={currentTech} listTasks={getTasksTech(currentTech)}/>}/>
+            <Route path="blogs" element={<TechMain name={currentTech} listTasks={getTasksTech(currentTech)} />} />
                       <Route path="*" element={<NoPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
 

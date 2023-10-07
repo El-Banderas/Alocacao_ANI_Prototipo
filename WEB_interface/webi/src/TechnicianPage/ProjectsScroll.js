@@ -5,51 +5,47 @@ import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-export default function ProjectScroll({name, listTasks }) {
+import ListSubheader from '@mui/material/ListSubheader';
+import List from '@mui/material/List';
+export default function ProjectScroll({ name, listTasks }) {
 
-    console.log(listTasks)
-
-    const renderProjectBox = ([taskName, taskLength], index) => {
-        console.log(index)
+    const renderContent = () => {
         return (
-                <ListItem  key={index} component="div" disablePadding>
-      <ListItemButton>
-        <ListItemText primary={taskName} />
-      </ListItemButton>
-    </ListItem>
-        )
-    }
+            <li key={`section-${name}`}>
+                <ul>
+                    <ListSubheader>{name}</ListSubheader>
+                    {listTasks.map(([taskName, taskLength]) => (
 
-    function renderRow(props) {
-  const { index, style } = props;
-/*return (
-    <ListItem style={style} key={index} component="div" disablePadding>
-      <ListItemButton>
-        {console.log("AQUI")}
-        <ListItemText primary={`Item ${index + 1}`} />
-      </ListItemButton>
-    </ListItem>
-  );*/
-    return listTasks.map((task, index) => renderProjectBox(task, index))
-  
-}
+
+                        <ListItem key={`item-${taskName}-${taskLength}`}>
+                            <ListItemText primary={`${taskName} (duração: ${taskLength})`} />
+                        </ListItem>
+
+
+                    ))}
+                </ul>
+            </li>
+        )
+
+    }
 
     return (
         <div className="projectLine ">
-               <Box
-      sx={{ width: '100%', height: 400, maxWidth: 360, bgcolor: 'background.paper' }}
-    >
-<FixedSizeList
-        height={400}
-        width={360}
-        itemSize={listTasks.length}
-        itemCount={listTasks.length}
-                overscanCount={listTasks.length}
-      >
-              {renderRow}
-      </FixedSizeList>
-</Box>
-       </div>
+            <List
+                sx={{
+                    width: '100%',
+                    maxWidth: 360,
+                    bgcolor: 'background.paper',
+                    position: 'relative',
+                    overflow: 'auto',
+                    maxHeight: 300,
+                    '& ul': { padding: 0 },
+                }}
+                subheader={<li />}
+            >
+                {renderContent()}
+            </List>
+        </div>
     )
     // {listTasks.map((task, index) => renderProjectBox(task, index))}
 }
