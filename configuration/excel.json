@@ -9,6 +9,10 @@
     "service_year" : "AnosServicos/B2"
 },
 "tasks": {
-    "duration" : "Projeto/B2"
+    "duration" : "Projeto/B2",
+    "ThemeArea" : "Projeto/B3",
+    "N.Prom" : "Projeto/B4",
+    "Phase" : "Projeto/B5"
+
 }
 }

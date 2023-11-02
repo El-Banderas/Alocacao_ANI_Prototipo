@@ -11,7 +11,7 @@ if __name__ == '__main__':
     attribution = main_solver(input=input)
     write_output(output=attribution, excel_path=path_output_excel)
     print("Conclusão da execução do programa")
-    server_main()
+    server_main(input=input, atributtion=attribution)
 
 
 
