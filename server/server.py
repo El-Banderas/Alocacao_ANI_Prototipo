@@ -52,10 +52,8 @@ class MyServer(BaseHTTPRequestHandler):
             return {"ERROR": "NO PROJECT FOUND"}
     
     def get_proj_name_by_id(self, proj_id : int):
-        print("Error")
-        print(self.translations["projs"])
-        print(proj_id)
         return self.translations["projs"][proj_id]
+
     def get_tecn_name_by_id(self, tecn_id : int):
         return self.translations["tecns"][tecn_id]
 
@@ -92,16 +90,22 @@ class MyServer(BaseHTTPRequestHandler):
             answer = self.get_tecn(tecn_name=query_components["tecn"])
         elif "attri" in query_components:
             answer = self.get_attribution()
+            print("ANSWER")
+            print(answer)
+        elif "removeTecn" in query_components:
+            print("Remover técnico")
+            print(unquote(query_components['removeTecn']))
         else:
-            pass
+            print("Not handled")
+            print(query_components)
+        
+
         self.send_response(200)
         self.send_header("Content-type", "application/json")
-        
         self.send_header('Access-Control-Allow-Origin','*')
         self.end_headers()
         self.wfile.write(json.dumps(answer).encode('utf-8'))
         
- 
 
         #print(self.tecns)
         #print(self.projs)
