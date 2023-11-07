@@ -67,7 +67,7 @@ class MyServer(BaseHTTPRequestHandler):
             # I confirmed, this is correct
             cost_this_project = self.compabilities[tecn][id_proj] * self.projs[id_proj].cost
             tasks_costs_relative_to_tecn[proj_name] = cost_this_project
-            if tecn not in attributions:
+            if tecn_name not in attributions:
                 attributions[tecn_name] = []
             attributions[tecn_name].append(proj_name)
         return {"input": {
@@ -80,7 +80,6 @@ class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
         print("Recebeu pedido ")
         query = urlparse(self.path).query
-        self.get_attribution()
         query_components = dict(qc.split("=") for qc in query.split("&"))
         print(query_components)
         answer = {'hello': 'world', 'received': 'ok'}

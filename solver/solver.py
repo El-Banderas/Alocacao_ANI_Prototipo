@@ -102,9 +102,9 @@ def main_solver(input : Input):
     
     df_task_time = pd.DataFrame(durations_tasks)
     attribution1 = carolina_heuristica(df_aptitudes=df_aptitudes, df_task_time=df_task_time, num_tasks=input.excel_information.num_projects+1 , machine_quantity=input.excel_information.num_technician+1 )
-    attribution2 = gui_heuristica(df_aptitude_between_task_machine=df_aptitudes, df_expected_task_time=df_task_time, num_tasks=input.excel_information.num_projects+1 , machine_quantity=input.excel_information.num_technician+1 )
-    print("ATR1")
-    print(attribution1)
-    print("ATR2")
-    print(attribution2)
+    #attribution2 = gui_heuristica(df_aptitude_between_task_machine=df_aptitudes, df_expected_task_time=df_task_time, num_tasks=input.excel_information.num_projects+1 , machine_quantity=input.excel_information.num_technician+1 )
+    #print("ATR1")
+    #print(attribution1)
+    #print("ATR2")
+    #print(attribution2)
     return attribution1

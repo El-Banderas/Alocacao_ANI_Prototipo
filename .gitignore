@@ -1,3 +1,6 @@
 
 *.pyc
 input/~$input.xlsx
+testes_heuristicas/LARGE.xlsx
+testes_heuristicas/MEDIUM.xlsx
+testes_heuristicas/SMALL.xlsx

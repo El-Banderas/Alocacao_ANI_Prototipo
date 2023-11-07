@@ -9,14 +9,11 @@ thin_border = Border(left=Side(style='thin'),
                      bottom=Side(style='thin'))
 
 def write_attribution(excel_workbook, attribution : list[int]):
-    output_sheet = excel_workbook['Atribuicoes']
+    output_sheet = excel_workbook.create_sheet('Atribuicoes')
     
     output_sheet['A1'] = 'Atribuição de técnicos a projetos'
     output_sheet['A2'] = 'Tarefas'
     output_sheet['A3'] = 'Técnicos atribuídos'
-    print("Attri")
-    print(type(attribution))
-    print(attribution)
     for task in range(len(attribution)):
         output_sheet.cell(row=2, column=task+2).value = task+1
         output_sheet.cell(row=3, column=task+2).value = attribution[task]+1
@@ -27,10 +24,10 @@ def write_attribution(excel_workbook, attribution : list[int]):
 # The output to be written is a list of ints, saying what technician do what job.
 def write_output(output : list[int], excel_path : str):
  
-    print("Starting writing output, size: ", len(output))
-    output_excel  = load_workbook(filename = excel_path)
+    # output_excel  = load_workbook(filename = excel_path)
+    output_excel = Workbook()
     
-    write_attribution(excel_workbook=output_excel, attribution=[100,2,3,4,5,6,7,8,9,10])
+    write_attribution(excel_workbook=output_excel, attribution=output)
 
     # Delete default sheet
     

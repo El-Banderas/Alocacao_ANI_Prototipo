@@ -37,8 +37,12 @@ def generate_input(num_tasks : int):
     return (df_expected_task_time, df_aptitude_between_task_machine)
 
 def calculate_that_column(costs_per_machine : dict):
-    costs_per_machine = list(map(lambda n : n.values[0], costs_per_machine))
+    costs_clean = []
+    for cost_one_machine in costs_per_machine:
+        costs_clean.append(cost_one_machine.values[0])
 
+    #costs_per_machine = list(map(lambda n : n.values[0], costs_per_machine))
+    costs_per_machine = costs_clean
     max_cost = max(costs_per_machine)
     min_cost = min(costs_per_machine)
     return max_cost-min_cost

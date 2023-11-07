@@ -82,7 +82,7 @@ def convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity):
         this_task_cost = df_task_time.iloc[task]
         costs_machines_this_works = []
         for machine in range(machine_quantity):
-            this_aptitude = df_aptitudes.iloc[task, machine]
+            this_aptitude = df_aptitudes.iat[machine, task]
             this_cost = (1 / this_aptitude) * this_task_cost
             costs_machines_this_works.append( this_cost.values[0])
         rows.append(costs_machines_this_works)
@@ -90,6 +90,9 @@ def convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity):
     
 
 def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity):
+    # Because input starts by 1
+    #machine_quantity = machine_quantity-1
+    #num_tasks = num_tasks - 1
     df_aptitude_between_task_machine = convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity)
     #df_aptitude_between_task_machine = pd.DataFrame(df_aptitudes)
 
@@ -97,7 +100,7 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity)
     # Create random attribution for all machines
     machines = []
     for i in range(machine_quantity):
-       machines.append(Machine(machine_id=i,  df_aptitude_between_task_machine=df_aptitude_between_task_machine))
+        machines.append(Machine(machine_id=i,  df_aptitude_between_task_machine=df_aptitude_between_task_machine))
     
     already_attributed_tasks = set()
     solution = [-1] * num_tasks 
@@ -113,5 +116,7 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity)
         solution[task_id] =  attributed_machine
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
     #print(load_per_machine)
+    print("SOLUTION")
+    print(solution)
     return solution
         
