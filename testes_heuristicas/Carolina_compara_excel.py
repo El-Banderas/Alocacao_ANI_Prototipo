@@ -3,6 +3,7 @@ import numpy as np
 import sys
 import pandas as pd
 import statistics
+from Carolina_Unrelated import carolina_heuristica
 
 df_aptitude_between_task_machine_matrix = [ 
 [7,20,12,3,	11,	16],
@@ -17,102 +18,35 @@ df_aptitude_between_task_machine_matrix = [
 [14,13,14,22,5,21]
     ]
 
-df_aptitude_between_task_machine = pd.DataFrame(df_aptitude_between_task_machine_matrix)
+for i in range(len(df_aptitude_between_task_machine_matrix)):
+    for ii in range(len(df_aptitude_between_task_machine_matrix[0])):
+        df_aptitude_between_task_machine_matrix[i][ii] = 1/df_aptitude_between_task_machine_matrix[i][ii]
 
-class Machine:
-    def __init__(self, machine_id : int, matrix, num_tasks : int):
-        self.machine_id = machine_id
-        self.attributed_tasks = []
-        # We store the costs of tasks in this macine
-        self.initial_random_tasks = df_aptitude_between_task_machine[machine_id]
-        self.total_current_tasks = 0
-        #for i in range(num_tasks):
-        self.total_remaining_tasks = df_aptitude_between_task_machine[machine_id].sum()
-    
-
-    # The cost is the vaue in the matrix
-    # And we store here to save time accessing the aptitude matrix
-    def add_task(self,task_id : int, cost : int):
-        pair_task_id_cost = (task_id, cost)
-        self.attributed_tasks.append(pair_task_id_cost)
-        self.total_current_tasks += cost
-        self.total_remaining_tasks -= cost
-    # We need to receive the already received tasks so we don't consider them again when checking 
-    def get_more_heavy_task(self, already_attributed_tasks : list[int]):
-        # More expensive task here
-        task_id = -1
-        task_cost = 0
-        for i in range(len(self.initial_random_tasks)):
-            if i not in already_attributed_tasks and self.initial_random_tasks[i] > task_cost:
-                #print("Change ", self.initial_random_tasks[i] , " < ", task_cost) 
-                #print(i)
-                task_id = i
-                task_cost = self.initial_random_tasks[i] 
-            
-        #self.total_remaining_tasks = self.total_remaining_tasks - task_cost
-        return task_id 
-
-
-
-def get_more_remaining_machine(machines : list[Machine]):
-    #for i in range(len(machines)):
-    #    print("Remaining: ", machines[i].total_remaining_tasks)
-    # Store the machine with more jobs, and quantity
-    return max(machines, key = lambda machine : machine.total_remaining_tasks)
-
-# Returns the machine that will contain the task
-def find_best_fit_for_task(machines : list[Machine], df_aptitude_between_task_machine, n_machines, task_id):
-    min_cost =  sys.maxsize
-    min_ind = -1
-    for current_machine in range(n_machines):
-        if_this_machine_does_it = df_aptitude_between_task_machine.iat[task_id, current_machine] + machines[current_machine].total_current_tasks
-        if if_this_machine_does_it <= min_cost:
-            # If they got the same cost, we need to compare the total cost to choose
-            if if_this_machine_does_it == min_cost:
-                if machines[current_machine].total_current_tasks < machines[min_ind].total_current_tasks:
-                    min_cost = if_this_machine_does_it
-                    min_ind = current_machine
-            # If is minimum, we just store the minimum cost
-            else:
-                min_cost =  if_this_machine_does_it #df_aptitude_between_task_machine.iat[task_id, current_machine]
-                min_ind = current_machine
-    machines[min_ind].add_task(task_id, df_aptitude_between_task_machine.iat[task_id, min_ind])
-    return min_ind
-    
-def get_load_per_machine(machines : list[Machine], df_expected_task_time):
-    machines_costs = []
-    for machine in machines:
-        total_cost_this_machine = 0
-        for (task_id_this_machine, cost_aptitude) in machine.attributed_tasks:
-            cost_task = df_expected_task_time.loc[task_id_this_machine].values[0]
-            this_cost = cost_task * cost_aptitude
-            total_cost_this_machine += this_cost
-        machines_costs.append(total_cost_this_machine)
-    return machines_costs
-
-
-def carolina_heuristica(df_aptitude_between_task_machine, num_tasks, machine_quantity):
-    # Create random attribution for all machines
-    machines = []
-    for i in range(machine_quantity):
-       machines.append(Machine(machine_id=i,  matrix=df_aptitude_between_task_machine, num_tasks=num_tasks))
-    
-    already_attributed_tasks = set()
-    solution = []
-    while len(already_attributed_tasks) < num_tasks:
-        # Machine with more remaining work
-        this_machine = get_more_remaining_machine(machines=machines)
-        # Get and remove the more heavy task of that machine
-        task_id = this_machine.get_more_heavy_task(already_attributed_tasks=already_attributed_tasks)
-        already_attributed_tasks.add(task_id)
-        attributed_machine = find_best_fit_for_task(machines=machines, df_aptitude_between_task_machine=df_aptitude_between_task_machine, n_machines=machine_quantity, task_id=task_id)
-        print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
-        solution.insert(task_id, attributed_machine)
-    #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
-    print("Solution Carol")
-    print(solution)
-    #print(load_per_machine)
-    return solution
-        
+def costs_per_machine(solution : list[int], df_expected_time, df_aptitude):
+    costs_per_machine = [0] * machine_quantity
+    for current_task in range(len(solution)):
+        task_length = df_expected_time.loc[current_task]
+        this_machine = solution[current_task]
+        this_aptitude = df_aptitude.iat[current_task, this_machine ]
+        costs_per_machine[this_machine] = costs_per_machine[this_machine] + (task_length / this_aptitude  )
+    return costs_per_machine
  
-carolina_heuristica(df_aptitude_between_task_machine=df_aptitude_between_task_machine, num_tasks=10, machine_quantity=6)
+num_tasks = len(df_aptitude_between_task_machine_matrix)
+num_techs = len(df_aptitude_between_task_machine_matrix[0])
+df_aptitude_between_task_machine = pd.DataFrame(df_aptitude_between_task_machine_matrix)
+lenghts = df = pd.DataFrame([1 for _ in range(num_tasks)])
+previous_costs = df = [0] * num_techs
+alocation = carolina_heuristica(df_aptitudes=df_aptitude_between_task_machine, df_task_time=lenghts, num_tasks=num_tasks, machine_quantity=num_techs, previous_costs=previous_costs)
+print("Alocation")
+print(alocation)
+defined_alocation = [4,3,3,6,4,2,5,1,5,5]
+defined_alocation_clean = list(map(lambda x: x-1, defined_alocation))
+print(list(map(lambda x : x, defined_alocation)))
+assert(defined_alocation_clean == alocation)
+
+machine_quantity = num_techs
+
+custosPorMaq = costs_per_machine(solution=alocation, df_expected_time=lenghts, df_aptitude=df_aptitude_between_task_machine)
+custosPorMaq = list(map(lambda x : x.values[0], custosPorMaq))
+print("Custos maq: ", custosPorMaq)
+assert(custosPorMaq == [11,	10,	9,	8,	10,	10])
