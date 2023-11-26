@@ -22,7 +22,7 @@ class Machine:
         pair_task_id_cost = (task_id, cost)
         self.attributed_tasks.append(pair_task_id_cost)
         self.total_current_tasks += cost
-        self.total_remaining_tasks -= cost
+        #self.total_remaining_tasks -= cost
     # We need to receive the already received tasks so we don't consider them again when checking 
     def get_more_heavy_task(self, already_attributed_tasks : list[int]):
         # More expensive task here
@@ -82,14 +82,21 @@ def convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity):
         this_task_cost = df_task_time.iloc[task]
         costs_machines_this_works = []
         for machine in range(machine_quantity):
-            this_aptitude = df_aptitudes.iat[machine,task]
+            this_aptitude = df_aptitudes.iat[task, machine]
             this_cost = (1 / this_aptitude) * this_task_cost
             costs_machines_this_works.append( this_cost.values[0])
         rows.append(costs_machines_this_works)
     return  pd.DataFrame(rows)
     
-
-def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity, previous_costs : list[int]):
+def update_remaining_costs(task_id : int, machines : list[Machine], df_aptitudes, costs_tasks):
+    for machine in machines:
+        cost_this_machine = df_aptitudes.iat[task_id, machine.machine_id] 
+        #cost_task = df_expected_task_time.loc[task_id_this_machine].values[0]
+        #this_cost = cost_task * cost_aptitude
+        machine.total_remaining_tasks = machine.total_remaining_tasks - cost_this_machine
+ 
+# Update Remaing Cost
+def carolina_heuristicaURC(df_aptitudes, df_task_time, num_tasks, machine_quantity, previous_costs : list[int]):
     # Because input starts by 1
     #machine_quantity = machine_quantity-1
     #num_tasks = num_tasks - 1
@@ -111,6 +118,7 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity,
         task_id = this_machine.get_more_heavy_task(already_attributed_tasks=already_attributed_tasks)
         already_attributed_tasks.add(task_id)
         attributed_machine = find_best_fit_for_task(machines=machines, df_aptitude_between_task_machine=df_aptitude_between_task_machine, n_machines=machine_quantity, task_id=task_id)
+        update_remaining_costs(task_id=task_id, machines=machines, df_aptitudes=df_aptitude_between_task_machine, costs_tasks=df_task_time)
         #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
         #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id  , " : ", task_id , " -> ", attributed_machine)
         solution[task_id] =  attributed_machine

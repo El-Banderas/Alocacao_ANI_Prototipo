@@ -1,4 +1,5 @@
 from input.input import Input
+from solver.CarolUpdateRemainingCost import carolina_heuristicaURC
 from solver.Carolina_Unrelated import carolina_heuristica
 from solver.Gui_heuristica import gui_heuristica
 import pandas as pd
@@ -97,11 +98,13 @@ def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
 def main_solver(input : Input):
     print("Starting heuristic")
     #attribution = heuristic_test(works=input.excel_information.duration_tasks, aptitudes_matrix=input.excel_information.compatibilities)
+    num_techs = input.excel_information.num_technician+1
+    current_total_occupations = [0] * num_techs
     df_aptitudes = pd.DataFrame(input.excel_information.compatibilities)
     durations_tasks = map(lambda proj : proj.cost, input.excel_information.tasks)
     
     df_task_time = pd.DataFrame(durations_tasks)
-    attribution1 = carolina_heuristica(df_aptitudes=df_aptitudes, df_task_time=df_task_time, num_tasks=input.excel_information.num_projects+1 , machine_quantity=input.excel_information.num_technician+1 )
+    attribution1 = carolina_heuristicaURC(df_aptitudes=df_aptitudes, df_task_time=df_task_time, num_tasks=input.excel_information.num_projects+1 , machine_quantity=input.excel_information.num_technician+1 , previous_costs=current_total_occupations)
     #attribution2 = gui_heuristica(df_aptitude_between_task_machine=df_aptitudes, df_expected_task_time=df_task_time, num_tasks=input.excel_information.num_projects+1 , machine_quantity=input.excel_information.num_technician+1 )
     #print("ATR1")
     #print(attribution1)

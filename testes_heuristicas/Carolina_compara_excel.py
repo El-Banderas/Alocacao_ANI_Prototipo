@@ -4,6 +4,7 @@ import sys
 import pandas as pd
 import statistics
 from Carolina_Unrelated import carolina_heuristica
+from CarolUpdateRemainingCost import carolina_heuristicaURC
 
 df_aptitude_between_task_machine_matrix = [ 
 [7,20,12,3,	11,	16],
@@ -36,7 +37,8 @@ num_techs = len(df_aptitude_between_task_machine_matrix[0])
 df_aptitude_between_task_machine = pd.DataFrame(df_aptitude_between_task_machine_matrix)
 lenghts = df = pd.DataFrame([1 for _ in range(num_tasks)])
 previous_costs = df = [0] * num_techs
-alocation = carolina_heuristica(df_aptitudes=df_aptitude_between_task_machine, df_task_time=lenghts, num_tasks=num_tasks, machine_quantity=num_techs, previous_costs=previous_costs)
+#alocation = carolina_heuristica(df_aptitudes=df_aptitude_between_task_machine, df_task_time=lenghts, num_tasks=num_tasks, machine_quantity=num_techs, previous_costs=previous_costs)
+alocation = carolina_heuristicaURC(df_aptitudes=df_aptitude_between_task_machine, df_task_time=lenghts, num_tasks=num_tasks, machine_quantity=num_techs, previous_costs=previous_costs)
 print("Alocation")
 print(alocation)
 defined_alocation = [4,3,3,6,4,2,5,1,5,5]
@@ -50,3 +52,21 @@ custosPorMaq = costs_per_machine(solution=alocation, df_expected_time=lenghts, d
 custosPorMaq = list(map(lambda x : x.values[0], custosPorMaq))
 print("Custos maq: ", custosPorMaq)
 assert(custosPorMaq == [11,	10,	9,	8,	10,	10])
+
+############  2º part ######################
+
+df_aptitude_between_task_machine_matrix2 = [ 
+[6,	14,	17,	5,	16,	9],
+[7,	20,	12,	3,	11,16],
+[12,	5,	14,	2,	3,	4]
+]
+for i in range(len(df_aptitude_between_task_machine_matrix2)):
+    for ii in range(len(df_aptitude_between_task_machine_matrix2[0])):
+        df_aptitude_between_task_machine_matrix2[i][ii] = 1/df_aptitude_between_task_machine_matrix2[i][ii]
+
+num_tasks = len(df_aptitude_between_task_machine_matrix2)
+df_aptitude_between_task_machine2 = pd.DataFrame(df_aptitude_between_task_machine_matrix2)
+lenghts = df = pd.DataFrame([1 for _ in range(num_tasks)])
+alocation = carolina_heuristica(df_aptitudes=df_aptitude_between_task_machine2, df_task_time=lenghts, num_tasks=num_tasks, machine_quantity=num_techs, previous_costs=custosPorMaq)
+print("Alocation")
+print(alocation)
