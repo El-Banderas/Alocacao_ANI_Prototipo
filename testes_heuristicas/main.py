@@ -4,6 +4,7 @@ from statistics import mean
 
 from Gui_heuristica import gui_heuristica
 from Carolina_Unrelated import carolina_heuristica
+from CarolUpdateRemainingCost import carolina_heuristicaURC
 from Renan import Renan_heuristic
 from Write_output import write_output
 import functools
@@ -67,12 +68,13 @@ def main_num_tasks(num_tasks):
     results_differences = {"Gui" : [], "Carolina" : [], "Renan" : []}
     results_attributions = {"Gui" : [], "Carolina" : [], "Renan" : []}
     input = []
+    current_total_occupations = [0] * machine_quantity
     for interation in range(num_interations):
         (df_task_time, df_aptitudes) = generate_input(num_tasks=num_tasks)
         pair = (df_task_time, df_aptitudes)
         input.append(pair)
         #(df_task_time, df_aptitudes) = carol_input()
-        solution_Carol = carolina_heuristica(df_task_time=df_task_time, df_aptitudes=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
+        solution_Carol = carolina_heuristica(df_task_time=df_task_time, df_aptitudes=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity, previous_costs=current_total_occupations)
         (std, total_cost , differences) = calculate_std(solution=solution_Carol, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
         results_std["Carolina"].append(std)
         results_total_cost["Carolina"].append(total_cost)
@@ -87,7 +89,8 @@ def main_num_tasks(num_tasks):
         results_total_cost["Gui"].append(total_cost)
         results_attributions["Gui"].append(solution_Gui)
 
-        solution_Renan = Renan_heuristic(df_expected_task_time=df_task_time, df_task_performance =df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity)
+        #solution_Renan = carolina_heuristicaURC(df_task_time=df_task_time, df_task_performance =df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity, previous_costs=current_total_occupations)
+        solution_Renan  = carolina_heuristicaURC(df_task_time=df_task_time, df_aptitudes=df_aptitudes, num_tasks=num_tasks, machine_quantity=machine_quantity, previous_costs=current_total_occupations)
         (std, total_cost, differences ) = calculate_std(solution=solution_Renan, df_expected_time=df_task_time, df_aptitude=df_aptitudes)
         results_differences["Renan"].append(differences)
         results_total_cost["Renan"].append(total_cost)

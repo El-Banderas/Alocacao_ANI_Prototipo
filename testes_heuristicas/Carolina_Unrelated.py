@@ -6,12 +6,12 @@ import statistics
 
 
 class Machine:
-    def __init__(self, machine_id : int, df_aptitude_between_task_machine):
+    def __init__(self, machine_id : int, df_aptitude_between_task_machine, previous_cost : int):
         self.machine_id = machine_id
         self.attributed_tasks = []
         # We store the costs of tasks in this macine
         self.initial_random_tasks = df_aptitude_between_task_machine[machine_id]
-        self.total_current_tasks = 0
+        self.total_current_tasks = previous_cost
         #for i in range(num_tasks):
         self.total_remaining_tasks = df_aptitude_between_task_machine[machine_id].sum()
     
@@ -89,7 +89,7 @@ def convert_input(df_aptitudes, df_task_time, num_tasks, machine_quantity):
     return  pd.DataFrame(rows)
     
 
-def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity):
+def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity, previous_costs : list[int]):
     # Because input starts by 1
     #machine_quantity = machine_quantity-1
     #num_tasks = num_tasks - 1
@@ -100,7 +100,7 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity)
     # Create random attribution for all machines
     machines = []
     for i in range(machine_quantity):
-        machines.append(Machine(machine_id=i,  df_aptitude_between_task_machine=df_aptitude_between_task_machine))
+        machines.append(Machine(machine_id=i,  df_aptitude_between_task_machine=df_aptitude_between_task_machine, previous_cost=previous_costs[i]))
     
     already_attributed_tasks = set()
     solution = [-1] * num_tasks 
@@ -116,5 +116,7 @@ def carolina_heuristica(df_aptitudes, df_task_time, num_tasks, machine_quantity)
         solution[task_id] =  attributed_machine
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
     #print(load_per_machine)
+    print("SOLUTION")
+    print(solution)
     return solution
         
