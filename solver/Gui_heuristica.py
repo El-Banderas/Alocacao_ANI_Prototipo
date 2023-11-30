@@ -1,19 +1,18 @@
 import pandas as pd
 import numpy as np
 
+
 # As últimas duas variáveis deviam ser lengths, mas como isto é para testes, não me apeteceu procurar
 # Procurar como se calcula o comprimento de dataframes (eu não costumo usar dataframes).
-def gui_heuristica(df_expected_task_time, df_aptitude_between_task_machine, num_tasks, machine_quantity):
+def gui_heuristica(
+    df_task_time_per_machine, load_per_machine, num_tasks, machine_quantity
+):
     # Create allocation recorder for solution interpretation
     solution = np.full((num_tasks, 1), -1)
     df_solution = pd.DataFrame(solution)
     # Calculate task time per machine
 
-    df_reciprocral_aptitude_between_task_machine = 1 / df_aptitude_between_task_machine
-
-    df_task_time_per_machine = df_reciprocral_aptitude_between_task_machine.multiply(
-        df_expected_task_time.squeeze(), axis=0
-    )
+    df_task_time_per_machine = excel
 
     # Calculate ideal load value
     load_per_machine = np.zeros((1, machine_quantity))
@@ -64,11 +63,8 @@ def gui_heuristica(df_expected_task_time, df_aptitude_between_task_machine, num_
         df_filter_list.iat[j, 0] = df_net_gain_string_sorted.iat[0, 0]
 
         Load_Objective = df_load_per_machine.max().max()
-    #print(df_load_per_machine.T.std().values[0])
-    #print(df_load_per_machine)
+    # print(df_load_per_machine.T.std().values[0])
+    # print(df_load_per_machine)
     return solution
-    #print(df_load_per_machine)
-    #return df_load_per_machine.T.std().values[0]
-
-
-   
+    # print(df_load_per_machine)
+    # return df_load_per_machine.T.std().values[0]
