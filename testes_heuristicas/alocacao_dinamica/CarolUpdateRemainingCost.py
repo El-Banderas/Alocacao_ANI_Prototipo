@@ -126,7 +126,5 @@ def carolina_heuristicaURC(df_aptitude_between_task_machine , num_tasks, machine
         solution[task_id] =  attributed_machine
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
     #print(load_per_machine)
-    print("SOLUTION")
-    print(solution)
     return solution
         

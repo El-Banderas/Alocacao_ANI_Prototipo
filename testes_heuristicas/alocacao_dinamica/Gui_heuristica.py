@@ -14,8 +14,11 @@ def gui_heuristica(
 
 
     # Calculate ideal load value
-    load_per_machine = np.zeros((1, machine_quantity))
-    df_load_per_machine = pd.DataFrame(load_per_machine)
+    #load_per_machine = np.zeros((1, machine_quantity))
+    #print("O que é????")
+    #print(load_per_machine)
+    #print(load_per_machine[0])
+    df_load_per_machine = pd.DataFrame([load_per_machine])
 
     Load_Objective = df_load_per_machine.max().max()
 

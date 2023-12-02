@@ -49,6 +49,8 @@ previous_costs_gui = [0] * num_techs
 def add_current_to_previous_costs(alocation : list[int],this_matrix_costs : list[list[int]], previous_costs : list[int] ):
     for proj, tech in enumerate(alocation):
         previous_costs[tech] += this_matrix_costs[proj][tech]
+        print(f"Add {tech}: {this_matrix_costs[proj][tech]}")
+    print(previous_costs)
     return previous_costs
 
 def invert_mtx(mtx : list[list[int]]):
@@ -63,6 +65,7 @@ def invert_mtx(mtx : list[list[int]]):
 
 # Check all projects by month
 for month in months_init_projs:
+    print("Alocation month: ", month)
     # Get projects this month
     projs_rows_begin_this_month = projetos_organizados_por_meses[month]
     this_matrix = []
@@ -73,14 +76,15 @@ for month in months_init_projs:
     this_matrix_pd = pd.DataFrame(this_matrix)
     # Do the alocations for two heuristics
     alocation = carolina_heuristicaURC(df_aptitude_between_task_machine=this_matrix_pd, num_tasks=num_projs, machine_quantity=num_techs, previous_costs=previous_costs_carol)
+    print("Carolina")
     previous_costs_carol = add_current_to_previous_costs(alocation=alocation, this_matrix_costs=this_matrix, previous_costs=previous_costs_carol)
     # In case the matrix should be inverted (if heuristic interprets the matrix other way). But it's commented
     # this_matrix_pd = pd.DataFrame(invert_mtx(this_matrix))
     alocation = gui_heuristica(df_task_time_per_machine=this_matrix_pd, load_per_machine=previous_costs_gui, num_tasks=num_projs, machine_quantity=num_techs)
     # To join list of lists
     alocation_clean = list(itertools.chain.from_iterable(alocation))
+    print("GUI")
     previous_costs_gui = add_current_to_previous_costs(alocation=alocation_clean, this_matrix_costs=this_matrix, previous_costs=previous_costs_gui)
-    print("Alocation month: ", month)
 
 def print_stuff(total_costs : list[int]):
     print(total_costs)
