@@ -6,6 +6,7 @@ from Gui_heuristica import gui_heuristica
 import itertools
 import statistics 
 
+######################################### READ EXCEL ################################################
 # load excel with its path 
 wrkbk = openpyxl.load_workbook("Dados Exemplos.xlsx", data_only=True) 
 
@@ -38,10 +39,13 @@ for row in sh_matrix.iter_rows(min_row=3, min_col=2):
 months_init_projs = list(projetos_organizados_por_meses.keys())
 months_init_projs.sort()
 
+######################################### HEURISTIC STUFF ################################################
+
 num_techs = len(matrix_aptitude[0])
 previous_costs_carol = [0] * num_techs
 previous_costs_gui = [0] * num_techs
 
+# Join current costs to the previous ones
 def add_current_to_previous_costs(alocation : list[int],this_matrix_costs : list[list[int]], previous_costs : list[int] ):
     for proj, tech in enumerate(alocation):
         previous_costs[tech] += this_matrix_costs[proj][tech]
@@ -57,15 +61,20 @@ def invert_mtx(mtx : list[list[int]]):
         inv_mtx.append(new_line)
     return inv_mtx
 
+# Check all projects by month
 for month in months_init_projs:
+    # Get projects this month
     projs_rows_begin_this_month = projetos_organizados_por_meses[month]
     this_matrix = []
+    # Construct matrix of aptitudes between projects of this month and techs
     for proj in projs_rows_begin_this_month:
         this_matrix.append(matrix_aptitude[proj])
     num_projs = len(this_matrix)
     this_matrix_pd = pd.DataFrame(this_matrix)
+    # Do the alocations for two heuristics
     alocation = carolina_heuristicaURC(df_aptitude_between_task_machine=this_matrix_pd, num_tasks=num_projs, machine_quantity=num_techs, previous_costs=previous_costs_carol)
     previous_costs_carol = add_current_to_previous_costs(alocation=alocation, this_matrix_costs=this_matrix, previous_costs=previous_costs_carol)
+    # In case the matrix should be inverted (if heuristic interprets the matrix other way). But it's commented
     # this_matrix_pd = pd.DataFrame(invert_mtx(this_matrix))
     alocation = gui_heuristica(df_task_time_per_machine=this_matrix_pd, load_per_machine=previous_costs_gui, num_tasks=num_projs, machine_quantity=num_techs)
     # To join list of lists
