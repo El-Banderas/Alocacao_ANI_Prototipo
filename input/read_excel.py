@@ -1,5 +1,6 @@
 from openpyxl import load_workbook
 #import sys
+import xlwings as xw 
 #sys.path.insert(0,"..")
 from info_classes.Tech import Tech
 from info_classes.Project import Proj
@@ -23,8 +24,8 @@ class Excel_Information:
         return cell_position.split("/")
 
     def get_sheet_by_name(self, sheetname : str):
-        if sheetname in self.excel_file.sheetnames:
-            return self.excel_file[sheetname]
+        if sheetname in self.excel_file.sheet_names:
+            return self.excel_file.sheets[sheetname]
         else:
             raise Exception(f"[READ EXCEL] Invalid excel, missing {sheetname} sheet")
 
@@ -55,17 +56,27 @@ class Excel_Information:
                 self.compatibilities.append(this_technician_projects)
 
         
-    def get_years_service(self):
-        sheetname, cell = self.split_cell_position(cell_position=self.configuration["technician"]["service_year"])
+    def get_current_ocupation_tecns(self):
+        sheetname, cell = self.split_cell_position(cell_position=self.configuration["current_effort"])
 
         sheet = self.get_sheet_by_name(sheetname=sheetname)
         column_index_start = ord(cell[0].lower())-96 
         row_index_start = int(cell[1:]) 
+        print(f"Linha de valores antigos? {row_index_start}:{row_index_start}")
+        print(sheet.range(f"{row_index_start}:{row_index_start}"))
+        row_previoues_costs = sheet.range(f"{row_index_start}:{row_index_start}")
+        for cell in row_previoues_costs:
+            if cell.value != None:
+                print(cell.value)
+            else:
+                break
+        '''
         for current_tecn in range(self.num_technician+1):
             years_services = sheet.cell(row=row_index_start+current_tecn, column=column_index_start).value
             this_tecn = Tech( service_year =years_services, id=current_tecn+1)
             self.tecns.append(this_tecn)
-    
+        '''
+
     # Here I'm going to assume they are near to each other, to make code simpler.
     # If necessary, make this more complete, when the Excel changes.
     def get_projects_info(self):
@@ -88,13 +99,14 @@ class Excel_Information:
 
 def read_excel(path_excel_input : str, configuration : dict):
 
-    excelFile = load_workbook(filename = path_excel_input, data_only=True)
+    excelFile = xw.Book(path_excel_input)#load_workbook(filename = path_excel_input, data_only=True)
     excel_information = Excel_Information(excel_file=excelFile, configuration=configuration)
-    excel_information.num_technician = excel_information.get_value( cell_position=configuration["general_data"]["num_technician"])  -1
-    excel_information.num_projects = excel_information.get_value( cell_position=configuration["general_data"]["num_projects"]) -1
-    excel_information.get_compability_matrix()
-    excel_information.get_years_service()
-    excel_information.get_projects_info()
-
+    #excel_information.num_technician = excel_information.get_value( cell_position=configuration["general_data"]["num_technician"])  -1
+    #excel_information.num_projects = excel_information.get_value( cell_position=configuration["general_data"]["num_projects"]) -1
+    #excel_information.get_compability_matrix()
+    excel_information.get_current_ocupation_tecns()
+    #excel_information.get_projects_info()
+    print("BYE!")
+    exit(0)
     return excel_information
     

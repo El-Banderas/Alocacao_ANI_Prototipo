@@ -14,5 +14,8 @@
     "N.Prom" : "Projeto/B4",
     "Phase" : "Projeto/B5"
 
-}
+},
+
+"compatibility2": "Matriz_Esforco_Atual/C3",
+"current_effort" : "Esforco_Tecnico/B7"
 }
