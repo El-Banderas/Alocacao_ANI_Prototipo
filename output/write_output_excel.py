@@ -21,7 +21,6 @@ def get_value_by_index(sheet, index_row : int, index_col :int):
 def set_value_by_index(sheet, index_row : int, index_col :int, value): 
     letter_col = convert_int_char(col=index_col)
     sheet.range(f"{letter_col}{index_row}").value = value
-    print(f"From {letter_col}{index_row} set: ", value)
     #print("Write value to sheet")
 
 def convert_cell_name_to_indexs(cell_name : str):

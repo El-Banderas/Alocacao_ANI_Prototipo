@@ -13,7 +13,8 @@ aptitudes_matrix: matrix that correlates the cost of workers to complete the tas
                   Each line/row represents one technique and the columns are the tasks.
 '''
 def heuristic_test(works : list[int], aptitudes_matrix : list[list[int]]):
-
+    print("Error")
+    print(aptitudes_matrix)
     df_expected_task_time = pd.DataFrame(works)
     num_tasks = len(works)
     # Create allocation recorder for solution interpretation
@@ -102,6 +103,8 @@ def main_solver(input : Input):
     current_total_occupations = [0] * num_techs
     df_aptitudes = pd.DataFrame(input.excel_information.compatibilities)
     durations_tasks = map(lambda proj : proj.cost, input.excel_information.tasks)
+    if input.excel_information.compatibilities == []:
+        return None
     
     df_task_time = pd.DataFrame(durations_tasks)
     attribution1 = carolina_heuristicaURC(df_aptitude_between_task_machine =df_aptitudes, num_tasks=input.excel_information.num_projects , machine_quantity=input.excel_information.num_technician , previous_costs=current_total_occupations)

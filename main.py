@@ -9,8 +9,10 @@ path_output_excel = './output/output.xlsx'
 if __name__ == '__main__':
     input = read_input(path_excel=path_input_excel)
     attribution = main_solver(input=input)
-    write_output(output=attribution, excel_path=path_input_excel, excel_input_info=input.excel_information)
-    print("Conclusão da execução do programa")
+    # Because the excel could be all filled
+    if attribution != None:
+        write_output(output=attribution, excel_path=path_input_excel, excel_input_info=input.excel_information)
+        print("Conclusão da execução do programa")
     server_main(input=input, atributtion=attribution)
 
 

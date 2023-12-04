@@ -99,6 +99,9 @@ class Excel_Information:
                         this_aptitude = sys.maxsize
                         #print(this_aptitude)
                         #this_aptitude == sys.maxsize
+                    else:
+
+                        this_aptitude = 1 /(this_aptitude)
                     this_project_values.append(this_aptitude)
                     #print(f"Aptidão tecn: {current_tecn+1} | proj : {current_proj+1} : {this_aptitude}")
                 

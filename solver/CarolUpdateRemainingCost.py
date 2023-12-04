@@ -27,7 +27,7 @@ class Machine:
     def get_more_heavy_task(self, already_attributed_tasks : list[int]):
         # More expensive task here
         task_id = -1
-        task_cost = 0
+        task_cost = -10
         for i in range(len(self.initial_random_tasks)):
             if i not in already_attributed_tasks and self.initial_random_tasks[i] > task_cost:
                 #print("Change ", self.initial_random_tasks[i] , " < ", task_cost) 
@@ -36,6 +36,7 @@ class Machine:
                 task_cost = self.initial_random_tasks[i] 
             
         #self.total_remaining_tasks = self.total_remaining_tasks - task_cost
+        print("Get more heavy task: ", task_id)
         return task_id 
 
 
@@ -112,7 +113,7 @@ def carolina_heuristicaURC(df_aptitude_between_task_machine , num_tasks, machine
         machines.append(Machine(machine_id=i,  df_aptitude_between_task_machine=df_aptitude_between_task_machine, previous_cost=previous_costs[i]))
     
     already_attributed_tasks = set()
-    solution = [-1] * num_tasks 
+    solution = [-2] * num_tasks 
     while len(already_attributed_tasks) < num_tasks:
         # Machine with more remaining work
         this_machine = get_more_remaining_machine(machines=machines)
@@ -121,10 +122,12 @@ def carolina_heuristicaURC(df_aptitude_between_task_machine , num_tasks, machine
         already_attributed_tasks.add(task_id)
         attributed_machine = find_best_fit_for_task(machines=machines, df_aptitude_between_task_machine=df_aptitude_between_task_machine, n_machines=machine_quantity, task_id=task_id)
         update_remaining_costs(task_id=task_id, machines=machines, df_aptitudes=df_aptitude_between_task_machine)
-        #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
+        print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
         #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id  , " : ", task_id , " -> ", attributed_machine)
         solution[task_id] =  attributed_machine
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
     #print(load_per_machine)
+    print("Solution")
+    print(solution)
     return solution
         
