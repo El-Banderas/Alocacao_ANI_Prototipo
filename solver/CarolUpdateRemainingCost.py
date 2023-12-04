@@ -53,7 +53,7 @@ def find_best_fit_for_task(machines : list[Machine], df_aptitude_between_task_ma
     min_ind = -1
     for current_machine in range(n_machines):
         if_this_machine_does_it = df_aptitude_between_task_machine.iat[task_id, current_machine] + machines[current_machine].total_current_tasks
-        if if_this_machine_does_it <= min_cost:
+        if if_this_machine_does_it < min_cost:
             # If they got the same cost, we need to compare the total cost to choose
             if if_this_machine_does_it == min_cost:
                 if machines[current_machine].total_current_tasks < machines[min_ind].total_current_tasks:
