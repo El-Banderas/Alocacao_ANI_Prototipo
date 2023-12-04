@@ -4,7 +4,6 @@
     "num_technician" : "Compatibilidade/C2",
     "num_projects" : "Compatibilidade/C1"
 },
-"compatibility": "Compatibilidade/C6",
 "technician": {
     "service_year" : "AnosServicos/B2"
 },
@@ -17,5 +16,11 @@
 },
 
 "compatibility2": "Matriz_Esforco_Atual/C3",
-"current_effort" : "Esforco_Tecnico/B7"
+"current_effort" : "Esforco_Tecnico/B7",
+"write_allocation": {
+    "sheetname": "Projetos",
+    "id" : "A2",
+    "analise" : "D2",
+    "gestor" : "E2"
+}
 }

@@ -4,7 +4,10 @@ import xlwings as xw
 #sys.path.insert(0,"..")
 from info_classes.Tech import Tech
 from info_classes.Project import Proj
+import sys
 
+def convert_int_char(col : int):
+    return chr(col+64)
 
 class Excel_Information:
     def __init__(self, excel_file, configuration : dict ):
@@ -15,6 +18,9 @@ class Excel_Information:
         # This matrix is stored like it's in the excel file.
         # Each row is a technician, and the columns are projects.
         self.compatibilities : list[int][int] = []
+        # To store the id's of projects that are handled
+        # If this has [3,4,7], the projects we will alcoate are 3, 4 and 7, the others we don't process
+        self.projects_handled : list[int] = []
         # Each position corresponds to the number of technician
         self.tecns : list[Tech] = []
         # Duration of each task
@@ -39,21 +45,72 @@ class Excel_Information:
         sheet  = self.get_sheet_by_name(sheetname=sheetname)
         return sheet[cell].value
 
+    def get_value_by_index(self, sheet, index_row : int, index_col :int): 
+        letter_col = convert_int_char(col=index_col)
+        #print(f"GET: {letter_col}{index_row}")
+        return sheet.range(f"{letter_col}{index_row}").value
+    
+    def get_num_tecns_projs(self):
+        sheetname, cell = self.split_cell_position(cell_position=self.configuration["compatibility2"])
+        sheet = self.get_sheet_by_name(sheetname=sheetname)
+        current_row_index = ord(cell[0].lower())-96 -1
+        current_column_index = int(cell[1:])        
+        # Get num tecns
+        num_tecns = 0
+        while(True):
+            if self.get_value_by_index(sheet=sheet, index_row=current_row_index, index_col=current_column_index+num_tecns) != None:
+                num_tecns+=1
+            else:
+                break
+        self.num_technician = num_tecns
+        num_projects = 0
+
+        while(True):
+            if self.get_value_by_index(sheet=sheet, index_row=current_row_index+num_projects+1, index_col=current_column_index-1) != None:
+                num_projects+=1
+            else:
+                break
+        self.num_projects = num_projects
+        print(f"NUM tecns: {num_tecns} / NUM projs: {num_projects}")
+
+
+
     def get_compability_matrix(self):
-        sheetname, cell = self.split_cell_position(cell_position=self.configuration["compatibility"])
+        sheetname, cell = self.split_cell_position(cell_position=self.configuration["compatibility2"])
         sheet = self.get_sheet_by_name(sheetname=sheetname)
         row_index_start = ord(cell[0].lower())-96 
         column_index_start = int(cell[1:]) 
-        
-        for current_tecn in range(self.num_technician+1):
-                current_row = column_index_start+current_tecn
-                this_technician_projects = []
-                for current_project in range(self.num_projects+1):
-                    current_col = row_index_start+current_project
-                    this_technician_projects.append(0.1*(sheet.cell(row=current_row, column=current_col).value))
-                    #print(f"Current position {current_row} / {current_col}:   {sheet.cell(row=current_row, column=current_col).value}")
-                    print(f"Aptidão tecn: {current_tecn+1} | proj : {current_project+1} : {0.1*sheet.cell(row=current_row, column=current_col).value}")
-                self.compatibilities.append(this_technician_projects)
+        current_proj = 0
+        while(current_proj < self.num_projects):
+            current_row = row_index_start+current_proj
+
+            this_project_values = []
+            current_col = column_index_start
+            value_cell1 = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=current_col)
+            value_cell2 = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=current_col+1)
+            # Check if project needs calculation
+            if value_cell1 != None or value_cell2 != None:
+                for current_tecn in range(self.num_technician):
+                    this_aptitude = self.get_value_by_index(sheet=sheet, index_row=row_index_start+current_proj, index_col=column_index_start+current_tecn)
+                    # When tecn can't do the job
+                    if this_aptitude == None:
+                        #print("NONE?")
+                        # Because Python 3 doesn't have a max number
+                        this_aptitude = sys.maxsize
+                        #print(this_aptitude)
+                        #this_aptitude == sys.maxsize
+                    this_project_values.append(this_aptitude)
+                    #print(f"Aptidão tecn: {current_tecn+1} | proj : {current_proj+1} : {this_aptitude}")
+                
+                #print(f"Project readen: {self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_index_start-1)}")
+                #self.compatibilities.append(this_technician_projects)
+                self.compatibilities.append(this_project_values)
+                self.projects_handled.append(int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_index_start-1)))
+            current_proj += 1
+        print("Results")
+        print(self.compatibilities)
+        print(self.projects_handled)
+        self.num_projects = len(self.compatibilities)
 
         
     def get_current_ocupation_tecns(self):
@@ -62,13 +119,9 @@ class Excel_Information:
         sheet = self.get_sheet_by_name(sheetname=sheetname)
         column_index_start = ord(cell[0].lower())-96 
         row_index_start = int(cell[1:]) 
-        print(f"Linha de valores antigos? {row_index_start}:{row_index_start}")
-        print(sheet.range(f"{row_index_start}:{row_index_start}"))
         row_previoues_costs = sheet.range(f"{row_index_start}:{row_index_start}")
         for cell in row_previoues_costs:
-            if cell.value != None:
-                print(cell.value)
-            else:
+            if cell.value == None:
                 break
         '''
         for current_tecn in range(self.num_technician+1):
@@ -101,12 +154,11 @@ def read_excel(path_excel_input : str, configuration : dict):
 
     excelFile = xw.Book(path_excel_input)#load_workbook(filename = path_excel_input, data_only=True)
     excel_information = Excel_Information(excel_file=excelFile, configuration=configuration)
+    excel_information.get_num_tecns_projs()
     #excel_information.num_technician = excel_information.get_value( cell_position=configuration["general_data"]["num_technician"])  -1
     #excel_information.num_projects = excel_information.get_value( cell_position=configuration["general_data"]["num_projects"]) -1
-    #excel_information.get_compability_matrix()
+    excel_information.get_compability_matrix()
     excel_information.get_current_ocupation_tecns()
     #excel_information.get_projects_info()
-    print("BYE!")
-    exit(0)
     return excel_information
     

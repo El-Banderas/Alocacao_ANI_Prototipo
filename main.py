@@ -9,7 +9,7 @@ path_output_excel = './output/output.xlsx'
 if __name__ == '__main__':
     input = read_input(path_excel=path_input_excel)
     attribution = main_solver(input=input)
-    write_output(output=attribution, excel_path=path_output_excel)
+    write_output(output=attribution, excel_path=path_input_excel, excel_input_info=input.excel_information)
     print("Conclusão da execução do programa")
     server_main(input=input, atributtion=attribution)
 
