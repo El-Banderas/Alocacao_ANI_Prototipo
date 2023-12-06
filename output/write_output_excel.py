@@ -37,11 +37,11 @@ def write_attribution(id_project : int, tecn_allocated : int, configuration : di
     (row_analise,col_analise ) = convert_cell_name_to_indexs(cell_name=configuration["analise"])
     row_analise=row_index_start
     if get_value_by_index(sheet=sheet, index_row=row_analise, index_col=col_analise) == None:
-        set_value_by_index(sheet=sheet, index_row=row_analise, index_col=col_analise, value=tecn_allocated)
+        set_value_by_index(sheet=sheet, index_row=row_analise, index_col=col_analise, value=tecn_allocated+1)
     else:
         (row_manager,col_manager ) = convert_cell_name_to_indexs(cell_name=configuration["gestor"])
         row_manager=row_index_start
-        set_value_by_index(sheet=sheet, index_row=row_manager, index_col=col_manager, value=tecn_allocated)
+        set_value_by_index(sheet=sheet, index_row=row_manager, index_col=col_manager, value=tecn_allocated+1)
 
 # The output to be written is a list of ints, saying what technician do what job.
 def write_output( excel_path : str, output : list[int],excel_input_info):

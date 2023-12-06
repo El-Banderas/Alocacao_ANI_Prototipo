@@ -36,7 +36,6 @@ class Machine:
                 task_cost = self.initial_random_tasks[i] 
             
         #self.total_remaining_tasks = self.total_remaining_tasks - task_cost
-        print("Get more heavy task: ", task_id)
         return task_id 
 
 
@@ -122,7 +121,7 @@ def carolina_heuristicaURC(df_aptitude_between_task_machine , num_tasks, machine
         already_attributed_tasks.add(task_id)
         attributed_machine = find_best_fit_for_task(machines=machines, df_aptitude_between_task_machine=df_aptitude_between_task_machine, n_machines=machine_quantity, task_id=task_id)
         update_remaining_costs(task_id=task_id, machines=machines, df_aptitudes=df_aptitude_between_task_machine)
-        print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
+        #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id +1 , " : ", task_id +1, " -> ", attributed_machine+1)
         #print("Iteration [machine_id / task_id / dest_machine]: ", this_machine.machine_id  , " : ", task_id , " -> ", attributed_machine)
         solution[task_id] =  attributed_machine
     #load_per_machine = get_load_per_machine(machines=machines, df_expected_task_time=df_expected_task_time)
