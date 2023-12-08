@@ -9,12 +9,19 @@ import sys
 def convert_int_char(col : int):
     return chr(col+64)
 
+def maybe_convert_int(value : int):
+    if value:
+        return int(value)
+
 class Excel_Information:
     def __init__(self, excel_file, configuration : dict ):
         self.excel_file = excel_file
         self.configuration = configuration
         self.num_technician  = -1  
+        # To heuristic
         self.num_projects = -1 
+        # To frontend (this values can be different if projects are already allocated)
+        self.num_projects_all = -1 
         # This matrix is stored like it's in the excel file.
         # Each row is a technician, and the columns are projects.
         self.compatibilities : list[int][int] = []
@@ -28,7 +35,13 @@ class Excel_Information:
         # Techs unavailable stored by id
         self.tecs_unavailable : list[int] = []
         # Efforts of each available tecn. Each index corresponds to the id of valid tecn minus 1.
-        self.tecns_effort : list[int] = []
+        # Used to heuristic, reduce input size
+        self.available_tecns_effort : list[int] = []
+        # Used to interface, show effort all tecns
+        self.all_tecns_effort : list[int] = []
+        # The two variables above should have been combined to save memory, but could create errors...
+
+    ################################# General functions to read excel ######################
 
     def split_cell_position(self, cell_position : str):
         return cell_position.split("/")
@@ -38,7 +51,6 @@ class Excel_Information:
             return self.excel_file.sheets[sheetname]
         else:
             raise Exception(f"[READ EXCEL] Invalid excel, missing {sheetname} sheet")
-
 
 
     # This function receives the excel file open, and the position of the cell, and returns the value
@@ -54,6 +66,8 @@ class Excel_Information:
         #print(f"GET: {letter_col}{index_row}")
         return sheet.range(f"{letter_col}{index_row}").value
     
+    ############################ INFO TO HEURISTICS ##########################################
+
     def get_num_tecns_projs(self):
         sheetname, cell = self.split_cell_position(cell_position=self.configuration["compatibility2"])
         sheet = self.get_sheet_by_name(sheetname=sheetname)
@@ -75,6 +89,7 @@ class Excel_Information:
             else:
                 break
         self.num_projects = num_projects
+        self.num_projects_all = num_projects
         print(f"NUM tecns: {num_tecns} / NUM projs: {num_projects}")
 
     # If all cells of the project are empty (None), the project is already allocated, or has finished.
@@ -90,6 +105,8 @@ class Excel_Information:
         row_index_start = ord(cell[0].lower())-96 
         column_index_start = int(cell[1:]) 
         current_proj = 0
+        # This is used in the end to replace the +inf
+        max_value = -1
         while(current_proj < self.num_projects):
             current_row = row_index_start+current_proj
 
@@ -106,6 +123,8 @@ class Excel_Information:
                         this_aptitude = sys.maxsize
                     else:
                         this_aptitude = (this_aptitude)
+                        if this_aptitude > max_value: 
+                            max_value = this_aptitude
                     this_project_values.append(this_aptitude)
                     #print(f"Aptidão tecn: {current_tecn+1} | proj : {current_proj+1} : {this_aptitude}")
                 
@@ -114,6 +133,10 @@ class Excel_Information:
                 self.compatibilities.append(this_project_values)
                 self.projects_handled.append(int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_index_start-1)))
             current_proj += 1
+        for line in range(len(self.compatibilities)):
+            for cell in range(len(self.compatibilities[line])):
+                if self.compatibilities[line][cell] == sys.maxsize:
+                    self.compatibilities[line][cell]= max_value+1
         print("Results")
         print(self.compatibilities)
         print(self.projects_handled)
@@ -128,31 +151,13 @@ class Excel_Information:
         row_index_start = int(cell[1:]) 
         for current_tecn in range(self.num_technician):
             effort_current_tecn = self.get_value_by_index(sheet=sheet, index_row=row_index_start, index_col=(current_tecn+column_index_start))
+            self.all_tecns_effort.append(effort_current_tecn)
             if current_tecn+1 not in self.tecs_unavailable:
-                self.tecns_effort.append(effort_current_tecn)
-
-    # Here I'm going to assume they are near to each other, to make code simpler.
-    # If necessary, make this more complete, when the Excel changes.
-    def get_projects_info(self):
-        sh_duration, cell_duration = self.split_cell_position(cell_position=self.configuration["tasks"]["duration"])
-
-        sheet = self.get_sheet_by_name(sheetname=sh_duration)
-        column_index_start = ord(cell_duration[0].lower())-96 
-        row_index_start = int(cell_duration[1:]) 
-        for current_project in range(self.num_projects+1):
-            this_duration = sheet.cell(row=row_index_start, column=column_index_start+current_project ).value
-            this_theme = sheet.cell(row=row_index_start+1, column=column_index_start+current_project ).value
-            this_nProm = sheet.cell(row=row_index_start+2, column=column_index_start+current_project ).value
-            #print("???")
-            #print(sheet.cell(row=row_index_start+2, column=column_index_start+current_project ).value)
-            #print(f"{row_index_start+2} - {column_index_start+current_project }")
-            this_Phase = sheet.cell(row=row_index_start+3, column=column_index_start+current_project ).value
-            this_Proj = Proj(id = current_project+1, cost=this_duration, theme=this_theme, nProm=this_nProm, currentPhase=this_Phase)
-            self.tasks.append(this_Proj)
+                self.available_tecns_effort.append(effort_current_tecn)
 
     def get_tecs_not_available(self):
-        sh_disponibility, cell_disponibility = self.split_cell_position(cell_position=self.configuration["technician1"]["disponibility"])
-        _, cell_id = self.split_cell_position(cell_position=self.configuration["technician1"]["id"])
+        sh_disponibility, cell_disponibility = self.split_cell_position(cell_position=self.configuration["technician"]["disponibility"])
+        _, cell_id = self.split_cell_position(cell_position=self.configuration["technician"]["id"])
 
         sheet = self.get_sheet_by_name(sheetname=sh_disponibility)
         column_disponibility = ord(cell_disponibility[0].lower())-96 
@@ -163,8 +168,68 @@ class Excel_Information:
                 current_tec_id = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_id) )
                 self.tecs_unavailable.append(current_tec_id) 
             current_row+=1
+    
+    ######################################### FRONTEND INFO READEN HERE #######################
+    
+    # Here we assume every info of a tech is in the same row
+    # So, we read line by line, and store in a tech.
+    # There should be no empty cells between them
+    def get_tecns_info(self):
+        sh_techs, cell_id = self.split_cell_position(cell_position=self.configuration["technician"]["id"])
+        _same_as_previous, cell_disponibility = self.split_cell_position(cell_position=self.configuration["technician"]["disponibility"])
+        _same_as_previous, cell_service_year = self.split_cell_position(cell_position=self.configuration["technician"]["service_year"])
 
+        sheet = self.get_sheet_by_name(sheetname=sh_techs)
+        current_row = int(cell_id[1:]) 
+        column_id = ord(cell_id[0].lower())-96 
+        column_disponibility = ord(cell_disponibility[0].lower())-96 
+        column_service_year = ord(cell_service_year[0].lower())-96 
+        for current_tech in range(self.num_technician):
+            this_id = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_id)
+            this_disponibility = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_disponibility)) == 1
+            this_service_year = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_service_year)
+            this_cur_effort = self.all_tecns_effort[current_tech]
+            #print(f"Tech {this_id}: Available {this_disponibility} started {this_service_year} effort {this_cur_effort}")
+            this_tech = Tech(service_year=this_service_year, id=this_id, availability=this_disponibility,current_effort=this_cur_effort ) 
+            self.tecns.append(this_tech)
+            current_row += 1
 
+    
+    # Here we assume every info of a tech is in the same row
+    # So, we read line by line, and store in a tech.
+    # There should be no empty cells between them
+    def get_projects_info(self):
+        tasks_config = self.configuration["tasks"]
+        sh_tasks, cell_id = self.split_cell_position(cell_position=tasks_config["id"])
+        _same_as_previous, cell_duration = self.split_cell_position(cell_position=tasks_config["duration"])
+        _same_as_previous, cell_themeArea = self.split_cell_position(cell_position=tasks_config["ThemeArea"])
+        _same_as_previous, cell_nProm = self.split_cell_position(cell_position=tasks_config["N.Prom"])
+        _same_as_previous, cell_Phase = self.split_cell_position(cell_position=tasks_config["Phase"])
+        _same_as_previous, cell_Phase = self.split_cell_position(cell_position=tasks_config["Phase"])
+        cell_analise = self.configuration["write_allocation"]["analise"]
+        cell_other = self.configuration["write_allocation"]["gestor"]
+        sheet = self.get_sheet_by_name(sheetname=sh_tasks)
+        current_row = int(cell_id[1:]) 
+        column_id = ord(cell_id[0].lower())-96 
+        column_duration  = ord(cell_duration[0].lower())-96 
+        column_area = ord(cell_themeArea[0].lower())-96 
+        column_nProm = ord(cell_nProm[0].lower())-96 
+        column_phase = ord(cell_Phase[0].lower())-96 
+        column_analises = ord(cell_analise[0].lower())-96 
+        column_other = ord(cell_other[0].lower())-96 
+        for current_project in range(self.num_projects_all):
+            this_id = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_id)
+            this_duration = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_duration))
+            this_area = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_area)
+            this_nProm = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_nProm)
+            this_phase = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_phase)
+            this_analise = maybe_convert_int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_analises))
+            this_other = maybe_convert_int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_other))
+            print(f"Proj {this_id}: duration {this_duration} area {this_area} prom {this_nProm} phase {this_phase} tecns: {this_analise}/{this_other}")
+            this_proj = Proj(id=this_id,cost=this_duration, nProm=this_nProm, currentPhase=this_phase, theme=this_area,analysis_tech=this_analise, other_tech=this_other)
+            self.tasks.append(this_proj)
+            current_row += 1
+    
 
 def read_excel(path_excel_input : str, configuration : dict):
 
@@ -174,6 +239,9 @@ def read_excel(path_excel_input : str, configuration : dict):
     excel_information.get_num_tecns_projs()
     excel_information.get_compability_matrix()
     excel_information.get_current_ocupation_tecns()
+    excel_information.get_tecns_info()
     #excel_information.get_projects_info()
     return excel_information
+
+
     

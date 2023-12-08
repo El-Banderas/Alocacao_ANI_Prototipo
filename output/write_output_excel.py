@@ -54,12 +54,4 @@ def write_output( excel_path : str, output : list[int],excel_input_info):
     #ws = excelFile.sheets("Projetos") 
     #ws.range("A1").value = "geeks"
     excelFile.save()
-    exit(0)
-    # output_excel  = load_workbook(filename = excel_path)
-    output_excel = Workbook()
     
-    write_attribution(excel_workbook=output_excel, attribution=output)
-
-    # Delete default sheet
-    
-    output_excel.save(excel_path)

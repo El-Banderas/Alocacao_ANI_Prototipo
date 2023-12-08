@@ -1,30 +1,24 @@
 {
+    "tasks": {
+        "id": "Projetos/A2",
+        "duration" : "Projetos/L2",
+        "ThemeArea" : "Projetos/H2",
+        "N.Prom" : "Projetos/F2",
+        "Phase" : "Projetos/C2"
 
-"general_data" : {
-    "num_technician" : "Compatibilidade/C2",
-    "num_projects" : "Compatibilidade/C1"
-},
-"technician": {
-    "service_year" : "AnosServicos/B2"
-},
-"tasks": {
-    "duration" : "Projeto/B2",
-    "ThemeArea" : "Projeto/B3",
-    "N.Prom" : "Projeto/B4",
-    "Phase" : "Projeto/B5"
+    },
 
-},
-
-"compatibility2": "Matriz_Esforco_Atual/C3",
-"current_effort" : "Esforco_Tecnico/B7",
-"write_allocation": {
-    "sheetname": "Projetos",
-    "id" : "A2",
-    "analise" : "D2",
-    "gestor" : "E2"
-},
-"technician1": {
-    "id" : "Tecnicos/A2",
-    "disponibility" : "Tecnicos/B2"
-}
+    "compatibility2": "Matriz_Esforco_Atual/C3",
+    "current_effort" : "Esforco_Tecnico/B7",
+    "write_allocation": {
+        "sheetname": "Projetos",
+        "id" : "A2",
+        "analise" : "D2",
+        "gestor" : "E2"
+    },
+    "technician": {
+        "id" : "Tecnicos/A2",
+        "disponibility" : "Tecnicos/B2",
+        "service_year" : "Tecnicos/D2"
+    }
 }

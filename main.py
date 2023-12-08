@@ -4,7 +4,6 @@ from output.write_output_excel import write_output
 from server.server import server_main
 
 path_input_excel = './input/states_V2.xlsm'
-path_output_excel = './output/output.xlsx'
 
 if __name__ == '__main__':
     input = read_input(path_excel=path_input_excel)
@@ -12,7 +11,7 @@ if __name__ == '__main__':
     # Because the excel could be all filled
     if attribution != None:
         write_output(output=attribution, excel_path=path_input_excel, excel_input_info=input.excel_information)
-        print("Conclusão da execução do programa")
+        input.excel_information.get_projects_info()
     server_main(input=input, atributtion=attribution)
 
 
