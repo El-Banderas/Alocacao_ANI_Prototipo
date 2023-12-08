@@ -63,8 +63,11 @@ def invert_mtx(mtx : list[list[int]]):
         inv_mtx.append(new_line)
     return inv_mtx
 
+n_months = 0
 # Check all projects by month
 for month in months_init_projs:
+    n_months = n_months + 1
+    
     print("Alocation month: ", month)
     # Get projects this month
     projs_rows_begin_this_month = projetos_organizados_por_meses[month]
@@ -95,3 +98,5 @@ print("Carol")
 print_stuff(total_costs=previous_costs_carol)
 print("Gui")
 print_stuff(total_costs=previous_costs_gui)
+
+print("Num months: ", n_months)
