@@ -35,12 +35,13 @@ def get_attributions_from_input(projs : list[Proj], input_translations):
     
 
 class MyServer(BaseHTTPRequestHandler):
-    def __init__(self, tecns : list[Tech], projs : list[Proj], compabilities, input_translations, *args, **kwargs):
+    def __init__(self, tecns : list[Tech], projs : list[Proj], compabilities, input_translations, input, *args, **kwargs):
         self.tecns = tecns
         self.projs = projs
         self.compabilities = compabilities
         self.translations = input_translations
         self.attributions = {}
+        self.all_input = input
         (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=projs, input_translations=input_translations)
         self.attributions["tasks_costs_relative_to_tecn"] = tasks_costs
         self.attributions["technicians"] = attributions_name_techn
@@ -57,20 +58,16 @@ class MyServer(BaseHTTPRequestHandler):
         if len(tecn) > 0:
             res = {}
             res["info"] = tecn[0].convert_to_dict()
-            print("Prepare stuff")
+            res["projects"] = []
             tecn_name = self.get_tecn_name_by_id(tecn_id=tecn_id)
             projs = self.attributions["technicians"][clean_name]
             for proj in projs:
                 [proj_name, phase] = proj.split("-")
-                print("\n\nProject: ")
-                print(proj_name)
-                print(phase)
 
                 proj_id = int(self.translations["projs"].index(unquote(proj_name)))
                 proj_info = list(filter(lambda this_proj: this_proj.id == proj_id, self.projs))[0]
-                print(proj_info)
-
-            return tecn[0].convert_to_dict()
+                res["projects"].append(proj_info.convert_to_dict())
+            return res #tecn[0].convert_to_dict()
         else: 
             # DEBUG, no project found
             print("No proj: ", tecn_id)
@@ -99,13 +96,25 @@ class MyServer(BaseHTTPRequestHandler):
         return self.translations["tecns"][tecn_id]
 
     def get_attribution(self):
-        print("GET attribution")
         
         return {"input": {
                 "tasks" : self.attributions["tasks_costs_relative_to_tecn"],
                 "technicians": self.attributions["technicians"]
             }
         } 
+
+    def reload_excel(self):
+        print("Reload excel")
+
+    #handler = partial(MyServer, input.excel_information.tecns, input.excel_information.tasks, input.excel_information.compatibilities, input.names_translations, input )
+        self.all_input.excel_information.get_projects_info()
+        self.tecns = self.all_input.excel_information.tecns
+        self.projs = self.all_input.excel_information.tasks
+        self.compabilities = self.all_input.excel_information.compatibilities  
+        self.translations = self.all_input.names_translations
+        (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=self.projs, input_translations=self.all_input.names_translations)
+        self.attributions["tasks_costs_relative_to_tecn"] = tasks_costs
+        self.attributions["technicians"] = attributions_name_techn
 
 
     def do_GET(self):
@@ -124,7 +133,7 @@ class MyServer(BaseHTTPRequestHandler):
             print(answer)
         elif "removeTecn" in query_components:
             print("Remover técnico")
-            print(unquote(query_components['removeTecn']))
+            self.reload_excel()
         else:
             print("Not handled")
             print(query_components)
@@ -141,7 +150,7 @@ class MyServer(BaseHTTPRequestHandler):
         #print(self.projs)
 
 def server_main(input):
-    handler = partial(MyServer, input.excel_information.tecns, input.excel_information.tasks, input.excel_information.compatibilities, input.names_translations )
+    handler = partial(MyServer, input.excel_information.tecns, input.excel_information.tasks, input.excel_information.compatibilities, input.names_translations, input )
     webServer = HTTPServer((hostName, serverPort), handler)
     print("Server started http://%s:%s" % (hostName, serverPort))
     try:

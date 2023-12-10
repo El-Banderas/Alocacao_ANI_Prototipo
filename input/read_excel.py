@@ -199,6 +199,7 @@ class Excel_Information:
     # So, we read line by line, and store in a tech.
     # There should be no empty cells between them
     def get_projects_info(self):
+        self.tasks = []
         tasks_config = self.configuration["tasks"]
         sh_tasks, cell_id = self.split_cell_position(cell_position=tasks_config["id"])
         _same_as_previous, cell_durationAnalysis = self.split_cell_position(cell_position=tasks_config["durationAnal"])
