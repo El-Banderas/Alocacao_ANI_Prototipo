@@ -1,7 +1,8 @@
 {
     "tasks": {
         "id": "Projetos/A2",
-        "duration" : "Projetos/L2",
+        "durationAnal" : "Projetos/J2",
+        "durationAcom" : "Projetos/K2",
         "ThemeArea" : "Projetos/H2",
         "N.Prom" : "Projetos/F2",
         "Phase" : "Projetos/C2"

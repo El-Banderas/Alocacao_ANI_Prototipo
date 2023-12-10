@@ -201,7 +201,8 @@ class Excel_Information:
     def get_projects_info(self):
         tasks_config = self.configuration["tasks"]
         sh_tasks, cell_id = self.split_cell_position(cell_position=tasks_config["id"])
-        _same_as_previous, cell_duration = self.split_cell_position(cell_position=tasks_config["duration"])
+        _same_as_previous, cell_durationAnalysis = self.split_cell_position(cell_position=tasks_config["durationAnal"])
+        _same_as_previous, cell_durationAccomp = self.split_cell_position(cell_position=tasks_config["durationAcom"])
         _same_as_previous, cell_themeArea = self.split_cell_position(cell_position=tasks_config["ThemeArea"])
         _same_as_previous, cell_nProm = self.split_cell_position(cell_position=tasks_config["N.Prom"])
         _same_as_previous, cell_Phase = self.split_cell_position(cell_position=tasks_config["Phase"])
@@ -211,22 +212,24 @@ class Excel_Information:
         sheet = self.get_sheet_by_name(sheetname=sh_tasks)
         current_row = int(cell_id[1:]) 
         column_id = ord(cell_id[0].lower())-96 
-        column_duration  = ord(cell_duration[0].lower())-96 
+        column_duration1  = ord(cell_durationAnalysis[0].lower())-96 
+        column_duration2  = ord(cell_durationAccomp[0].lower())-96 
         column_area = ord(cell_themeArea[0].lower())-96 
         column_nProm = ord(cell_nProm[0].lower())-96 
         column_phase = ord(cell_Phase[0].lower())-96 
         column_analises = ord(cell_analise[0].lower())-96 
         column_other = ord(cell_other[0].lower())-96 
         for current_project in range(self.num_projects_all):
-            this_id = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_id)
-            this_duration = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_duration))
+            this_id = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_id))
+            this_durationAnalysis = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_duration1))
+            this_durationAccomp = int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_duration2))
             this_area = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_area)
             this_nProm = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_nProm)
             this_phase = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_phase)
             this_analise = maybe_convert_int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_analises))
             this_other = maybe_convert_int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_other))
-            print(f"Proj {this_id}: duration {this_duration} area {this_area} prom {this_nProm} phase {this_phase} tecns: {this_analise}/{this_other}")
-            this_proj = Proj(id=this_id,cost=this_duration, nProm=this_nProm, currentPhase=this_phase, theme=this_area,analysis_tech=this_analise, other_tech=this_other)
+            print(f"Proj {this_id}: duration {this_durationAccomp+this_durationAnalysis} area {this_area} prom {this_nProm} phase {this_phase} tecns: {this_analise}/{this_other}")
+            this_proj = Proj(id=this_id,costAnalysis=this_durationAnalysis, costAccomp=this_durationAccomp, nProm=this_nProm, currentPhase=this_phase, theme=this_area,analysis_tech=this_analise, other_tech=this_other)
             self.tasks.append(this_proj)
             current_row += 1
     

@@ -10,25 +10,66 @@ from urllib.parse import unquote
 hostName = "localhost"
 serverPort = 7999
 
+def get_attributions_from_input(projs : list[Proj], input_translations):
+        tasks_costs_relative_to_tecn : dict= {}
+        attributions = {}
+        for proj in projs:
+            proj_name = input_translations["projs"][proj.id]
+            # Check analysis
+            if proj.analysis_tech != None:
+                tecn_name = input_translations["tecns"][proj.analysis_tech]
+                proj_name_analysis = f"{proj_name}-Análise"
+                tasks_costs_relative_to_tecn[proj_name_analysis] = proj.costAnalysis
+                if tecn_name not in attributions:
+                    attributions[tecn_name] = []
+                attributions[tecn_name].append(proj_name_analysis)
+            if proj.other_tech != None:
+                tecn_name = input_translations["tecns"][proj.other_tech]
+                proj_name_accomp = f"{proj_name}-Acompanhamento"
+                tasks_costs_relative_to_tecn[proj_name_accomp] = proj.costAccomp
+                if tecn_name not in attributions:
+                    attributions[tecn_name] = []
+                attributions[tecn_name].append(proj_name_accomp)
+        return (tasks_costs_relative_to_tecn, attributions)
+
+    
+
 class MyServer(BaseHTTPRequestHandler):
-    def __init__(self, tecns : list[Tech], projs : list[Proj], attribution, compabilities, input_translations, *args, **kwargs):
+    def __init__(self, tecns : list[Tech], projs : list[Proj], compabilities, input_translations, *args, **kwargs):
         self.tecns = tecns
         self.projs = projs
-        self.attribution = attribution
         self.compabilities = compabilities
         self.translations = input_translations
+        self.attributions = {}
+        (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=projs, input_translations=input_translations)
+        self.attributions["tasks_costs_relative_to_tecn"] = tasks_costs
+        self.attributions["technicians"] = attributions_name_techn
         # BaseHTTPRequestHandler calls do_GET **inside** __init__ !!!
         # So we have to call super().__init__ after setting attributes.
         super().__init__(*args, **kwargs)
-    
+
+
     def get_tecn(self, tecn_name : str):
 
-        print("Before error")
-        print(tecn_name)
-        print(self.translations["tecns"])
-        tecn_id = int(self.translations["tecns"].index(unquote(tecn_name)))
+        clean_name = unquote(tecn_name)
+        tecn_id = int(self.translations["tecns"].index(clean_name))
         tecn = list(filter(lambda tecn: tecn.id == tecn_id, self.tecns))
         if len(tecn) > 0:
+            res = {}
+            res["info"] = tecn[0].convert_to_dict()
+            print("Prepare stuff")
+            tecn_name = self.get_tecn_name_by_id(tecn_id=tecn_id)
+            projs = self.attributions["technicians"][clean_name]
+            for proj in projs:
+                [proj_name, phase] = proj.split("-")
+                print("\n\nProject: ")
+                print(proj_name)
+                print(phase)
+
+                proj_id = int(self.translations["projs"].index(unquote(proj_name)))
+                proj_info = list(filter(lambda this_proj: this_proj.id == proj_id, self.projs))[0]
+                print(proj_info)
+
             return tecn[0].convert_to_dict()
         else: 
             # DEBUG, no project found
@@ -57,22 +98,12 @@ class MyServer(BaseHTTPRequestHandler):
     def get_tecn_name_by_id(self, tecn_id : int):
         return self.translations["tecns"][tecn_id]
 
-    # We got numbers 0, in input there is no 0
     def get_attribution(self):
-        tasks_costs_relative_to_tecn : dict= {}
-        attributions = {}
-        for id_proj, tecn in enumerate(self.attribution):
-            proj_name = self.get_proj_name_by_id(id_proj)
-            tecn_name = self.get_tecn_name_by_id(tecn_id=tecn)
-            # I confirmed, this is correct
-            cost_this_project = self.compabilities[tecn][id_proj] * self.projs[id_proj].cost
-            tasks_costs_relative_to_tecn[proj_name] = cost_this_project
-            if tecn_name not in attributions:
-                attributions[tecn_name] = []
-            attributions[tecn_name].append(proj_name)
+        print("GET attribution")
+        
         return {"input": {
-                "tasks" : tasks_costs_relative_to_tecn,
-                "technicians": attributions
+                "tasks" : self.attributions["tasks_costs_relative_to_tecn"],
+                "technicians": self.attributions["technicians"]
             }
         } 
 
@@ -109,12 +140,13 @@ class MyServer(BaseHTTPRequestHandler):
         #print(self.tecns)
         #print(self.projs)
 
-def server_main(input, atributtion):
-    handler = partial(MyServer, input.excel_information.tecns, input.excel_information.tasks, atributtion, input.excel_information.compatibilities, input.names_translations )
+def server_main(input):
+    handler = partial(MyServer, input.excel_information.tecns, input.excel_information.tasks, input.excel_information.compatibilities, input.names_translations )
     webServer = HTTPServer((hostName, serverPort), handler)
     print("Server started http://%s:%s" % (hostName, serverPort))
     try:
         webServer.serve_forever()
+        
     except KeyboardInterrupt:
         webServer.server_close()
         print("Server stopped.")
