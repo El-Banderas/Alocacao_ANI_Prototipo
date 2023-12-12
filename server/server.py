@@ -58,6 +58,11 @@ class MyServer(BaseHTTPRequestHandler):
         if len(tecn) > 0:
             res = {}
             res["info"] = tecn[0].convert_to_dict()
+            res["info"]["current_effort"] = int(res["info"]["current_effort"])
+            if res["info"]["availability"]:
+                res["info"]["availability"] = "Sim"
+            else: 
+                res["info"]["availability"] = "Não"
             res["projects"] = []
             tecn_name = self.get_tecn_name_by_id(tecn_id=tecn_id)
             projs = self.attributions["technicians"][clean_name]
@@ -77,11 +82,12 @@ class MyServer(BaseHTTPRequestHandler):
 
 
     def get_proj(self, proj_name : str):
-        proj_id = int(self.translations["projs"].index(unquote(proj_name)))
+        proj_name = unquote(proj_name).split("-")[0]
+        proj_id = int(self.translations["projs"].index(proj_name))
         
         proj = list(filter(lambda proj: proj.id == proj_id, self.projs))
         if len(proj) > 0:
-            return proj[0].convert_to_dict()
+            return { "info": proj[0].convert_to_dict()}
         else: 
             # DEBUG, no project found
             print("No proj: ", proj_id)
