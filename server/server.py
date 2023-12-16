@@ -15,6 +15,7 @@ def get_attributions_from_input(projs : list[Proj], input_translations):
         attributions = {}
         for proj in projs:
             proj_name = input_translations["projs"][proj.id]
+            proj.add_name(proj_name)
             # Check analysis
             if proj.analysis_tech != None:
                 tecn_name = input_translations["tecns"][proj.analysis_tech]
@@ -57,12 +58,8 @@ class MyServer(BaseHTTPRequestHandler):
         tecn = list(filter(lambda tecn: tecn.id == tecn_id, self.tecns))
         if len(tecn) > 0:
             res = {}
-            res["info"] = tecn[0].convert_to_dict()
-            res["info"]["current_effort"] = int(res["info"]["current_effort"])
-            if res["info"]["availability"]:
-                res["info"]["availability"] = "Sim"
-            else: 
-                res["info"]["availability"] = "Não"
+            res["info"] = tecn[0].convert_to_dict_pt()
+            
             res["projects"] = []
             tecn_name = self.get_tecn_name_by_id(tecn_id=tecn_id)
             projs = self.attributions["technicians"][clean_name]
@@ -71,7 +68,8 @@ class MyServer(BaseHTTPRequestHandler):
 
                 proj_id = int(self.translations["projs"].index(unquote(proj_name)))
                 proj_info = list(filter(lambda this_proj: this_proj.id == proj_id, self.projs))[0]
-                res["projects"].append(proj_info.convert_to_dict())
+                res["projects"].append(proj_info.convert_to_dict_pt())
+            res["projects_tecn_id"] = tecn_id
             return res #tecn[0].convert_to_dict()
         else: 
             # DEBUG, no project found
@@ -87,7 +85,7 @@ class MyServer(BaseHTTPRequestHandler):
         
         proj = list(filter(lambda proj: proj.id == proj_id, self.projs))
         if len(proj) > 0:
-            return { "info": proj[0].convert_to_dict()}
+            return { "info": proj[0].convert_to_dict_pt()}
         else: 
             # DEBUG, no project found
             print("No proj: ", proj_id)
