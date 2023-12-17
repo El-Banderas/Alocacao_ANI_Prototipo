@@ -16,8 +16,8 @@ class Tech:
 
         dict_res = {}
         dict_res["id"] = self.id
-        dict_res["Disponível?"] = self.availability
-        dict_res["Esforço atual"] = self.current_effort
+        dict_res["Disponível"] = self.availability
+        dict_res["Esforço atual"] = int(self.current_effort)
         return dict_res
     
     

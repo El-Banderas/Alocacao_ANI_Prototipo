@@ -48,15 +48,15 @@ class Proj:
     def convert_to_dict_pt(self):
         dict_res = {}
         dict_res["id"] = self.id
-        dict_res["Custo análise"] = self.costAnalysis
-        dict_res["Custo acompanhamento"] = self.costAccomp
+        dict_res["Esforço análise"] = self.costAnalysis
+        dict_res["Esforço acompanhamento"] = self.costAccomp
         dict_res["Tema"] = self.theme
-        dict_res["N. Promotores"] = self.nProm
+        dict_res["Tipo de projeto"] = self.nProm
         dict_res["Fase atual"] = self.convert_state_str()
-        dict_res["Tecn. análise"] = self.analysis_tech
-        dict_res["Tecn. acompanhamento"] = self.other_tech
+        dict_res["Técnico análise"] = self.analysis_tech
+        dict_res["Técnico acompanhamento"] = self.other_tech
         dict_res["Sigla"] = self.name
         dict_res["Data início"] = self.init_date
         dict_res["Data fim"] = self.end_date
-        dict_res["Esf. atual"] = self.current_effort()
+        dict_res["Esforço atual"] = self.current_effort()
         return dict_res
