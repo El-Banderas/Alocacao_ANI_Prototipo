@@ -33,3 +33,6 @@ Técnico:
 Projeto:
 - Sigla;
 - Nós apresentamos mais coisas, ver se continuamos a apresentar na segunda fase
+
+## Falta ver formato JSON!
+É preciso ter em conta como vamos usar os dados, para não ser muito custoso fazer contas e obter info
