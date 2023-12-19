@@ -11,5 +11,13 @@ class Tech:
 
     def convert_to_dict(self):
         return self.__dict__
+
+    def convert_to_dict_pt(self):
+
+        dict_res = {}
+        dict_res["id"] = self.id
+        dict_res["Disponível"] = self.availability
+        dict_res["Esforço atual"] = int(self.current_effort)
+        return dict_res
     
     

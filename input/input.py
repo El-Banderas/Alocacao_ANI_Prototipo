@@ -27,7 +27,7 @@ def read_input(path_excel : str):
     excel_configuration = read_json(path_file=path_configuration_excel)
     input = Input()
     input.excel_information = read_excel(path_excel_input=path_excel, configuration=excel_configuration)
-    (tecns_translation, proj_translations) = read_names(path_excel_input=path_excel_names)
+    (tecns_translation, proj_translations) = read_names(path_excel_input=path_excel)
     input.names_translations["tecns"] = tecns_translation
     input.names_translations["projs"] = proj_translations
     return input

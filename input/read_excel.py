@@ -5,6 +5,7 @@ import xlwings as xw
 from info_classes.Tech import Tech
 from info_classes.Project import Proj
 import sys
+import datetime
 
 def convert_int_char(col : int):
     return chr(col+64)
@@ -208,6 +209,8 @@ class Excel_Information:
         _same_as_previous, cell_nProm = self.split_cell_position(cell_position=tasks_config["N.Prom"])
         _same_as_previous, cell_Phase = self.split_cell_position(cell_position=tasks_config["Phase"])
         _same_as_previous, cell_Phase = self.split_cell_position(cell_position=tasks_config["Phase"])
+        _same_as_previous, cell_InitDate = self.split_cell_position(cell_position=tasks_config["DateInit"])
+        _same_as_previous, cell_EndDate = self.split_cell_position(cell_position=tasks_config["DateEnd"])
         cell_analise = self.configuration["write_allocation"]["analise"]
         cell_other = self.configuration["write_allocation"]["gestor"]
         sheet = self.get_sheet_by_name(sheetname=sh_tasks)
@@ -218,6 +221,8 @@ class Excel_Information:
         column_area = ord(cell_themeArea[0].lower())-96 
         column_nProm = ord(cell_nProm[0].lower())-96 
         column_phase = ord(cell_Phase[0].lower())-96 
+        column_initDate = ord(cell_InitDate[0].lower())-96 
+        column_endDate = ord(cell_EndDate[0].lower())-96 
         column_analises = ord(cell_analise[0].lower())-96 
         column_other = ord(cell_other[0].lower())-96 
         for current_project in range(self.num_projects_all):
@@ -227,10 +232,17 @@ class Excel_Information:
             this_area = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_area)
             this_nProm = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_nProm)
             this_phase = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_phase)
+            this_initDate = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_initDate)
+            this_endDate = self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_endDate)
             this_analise = maybe_convert_int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_analises))
             this_other = maybe_convert_int(self.get_value_by_index(sheet=sheet, index_row=current_row, index_col=column_other))
             print(f"Proj {this_id}: duration {this_durationAccomp+this_durationAnalysis} area {this_area} prom {this_nProm} phase {this_phase} tecns: {this_analise}/{this_other}")
             this_proj = Proj(id=this_id,costAnalysis=this_durationAnalysis, costAccomp=this_durationAccomp, nProm=this_nProm, currentPhase=this_phase, theme=this_area,analysis_tech=this_analise, other_tech=this_other)
+            this_initDate = this_initDate.strftime("%d/%m/%Y")
+            this_endDate = this_endDate.strftime("%d/%m/%Y")
+            this_initDate = str(this_initDate).split(" ")[0]
+            this_endDate = str(this_endDate).split(" ")[0]
+            this_proj.addDates(init_date=this_initDate, end_date=this_endDate)
             self.tasks.append(this_proj)
             current_row += 1
     
