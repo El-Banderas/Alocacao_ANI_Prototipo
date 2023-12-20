@@ -62,6 +62,9 @@ class MyServer(BaseHTTPRequestHandler):
             
             res["projects"] = []
             tecn_name = self.get_tecn_name_by_id(tecn_id=tecn_id)
+            print("\n\nWhat info of tech?")
+            print(clean_name)
+            print(self.attributions["technicians"])
             projs = self.attributions["technicians"][clean_name]
             for proj in projs:
                 [proj_name, phase] = proj.split("-")
@@ -119,7 +122,9 @@ class MyServer(BaseHTTPRequestHandler):
         (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=self.projs, input_translations=self.all_input.names_translations)
         self.attributions["tasks_costs_relative_to_tecn"] = tasks_costs
         self.attributions["technicians"] = attributions_name_techn
-
+        print("Excel reloaded!")
+        print(self.attributions["technicians"]) 
+        print("\n")
 
     def do_GET(self):
         print("Recebeu pedido ")
@@ -136,8 +141,10 @@ class MyServer(BaseHTTPRequestHandler):
             print("ANSWER")
             print(answer)
         elif "removeTecn" in query_components:
-            print("Remover técnico")
+            print("Update input")
             self.reload_excel()
+            answer = self.get_attribution()
+
         else:
             print("Not handled")
             print(query_components)
