@@ -152,6 +152,8 @@ class MyServer(BaseHTTPRequestHandler):
             print(query_components)
         
         print("Send response")
+        print(answer)
+        print("------------------\n\n")
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.send_header('Access-Control-Allow-Origin','*')

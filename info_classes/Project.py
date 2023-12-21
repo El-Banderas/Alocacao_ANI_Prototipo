@@ -15,7 +15,7 @@ class Proj:
         self.name = name
 
     def __str__(self):
-        return f"{self.id} - {self.theme} (tema): cost {self.costAccomp} / {self.nProm} (num prom) and {self.currentPhase} (currentPhase) "
+        return f"{self.id} - {self.theme} (tema): cost {self.costAnalysis}-{self.costAccomp}/ {self.nProm} (num prom) and {self.currentPhase} (currentPhase) "
     
     def addDates(self, init_date : str, end_date : str):
         self.init_date = init_date
