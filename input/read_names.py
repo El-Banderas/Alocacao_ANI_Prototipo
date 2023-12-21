@@ -18,6 +18,6 @@ def read_translation(sheetname : str, workbook, col_id : int, col_value : int):
 
 def read_names(path_excel_input : str):
     excelFile = load_workbook(filename = path_excel_input, data_only=True)
-    translation_tecns = read_translation(sheetname="Tecnicos", workbook=excelFile, col_id=0, col_value=10 )
+    translation_tecns = read_translation(sheetname="Tecnicos", workbook=excelFile, col_id=0, col_value=2 )
     translation_projs = read_translation(sheetname="Projetos", workbook=excelFile, col_id=0, col_value=17)
     return (translation_tecns, translation_projs)

@@ -4,7 +4,6 @@ import json
 
 # Paths are relative to main file
 path_configuration_excel = 'configuration/excel.json'
-path_excel_names = './input/Nomes.xlsx'
 
 '''
 In this class we get all the information, from excel and maybe OutSystems.
