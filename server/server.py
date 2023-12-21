@@ -44,8 +44,8 @@ class MyServer(BaseHTTPRequestHandler):
         self.attributions = {}
         self.all_input = input
         (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=projs, input_translations=input_translations)
-        self.attributions["tasks_costs_relative_to_tecn"] = tasks_costs
-        self.attributions["technicians"] = attributions_name_techn
+        self.attributions_cost = tasks_costs
+        self.attributions_tecns = attributions_name_techn
         # BaseHTTPRequestHandler calls do_GET **inside** __init__ !!!
         # So we have to call super().__init__ after setting attributes.
         super().__init__(*args, **kwargs)
@@ -64,8 +64,10 @@ class MyServer(BaseHTTPRequestHandler):
             tecn_name = self.get_tecn_name_by_id(tecn_id=tecn_id)
             print("\n\nWhat info of tech?")
             print(clean_name)
-            print(self.attributions["technicians"])
-            projs = self.attributions["technicians"][clean_name]
+            self.all_input.excel_information.get_projects_info()
+            (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=self.all_input.excel_information.tasks, input_translations=self.all_input.names_translations)
+            projs = attributions_name_techn[clean_name]
+            print(attributions_name_techn)
             for proj in projs:
                 [proj_name, phase] = proj.split("-")
 
@@ -105,8 +107,8 @@ class MyServer(BaseHTTPRequestHandler):
     def get_attribution(self):
         
         return {"input": {
-                "tasks" : self.attributions["tasks_costs_relative_to_tecn"],
-                "technicians": self.attributions["technicians"]
+                "tasks" : self.attributions_cost,
+                "technicians": self.attributions_tecns
             }
         } 
 
@@ -120,10 +122,10 @@ class MyServer(BaseHTTPRequestHandler):
         self.compabilities = self.all_input.excel_information.compatibilities  
         self.translations = self.all_input.names_translations
         (tasks_costs, attributions_name_techn) = get_attributions_from_input(projs=self.projs, input_translations=self.all_input.names_translations)
-        self.attributions["tasks_costs_relative_to_tecn"] = tasks_costs
-        self.attributions["technicians"] = attributions_name_techn
+        self.attributions_cost = tasks_costs
+        self.attributions_tecns = attributions_name_techn
         print("Excel reloaded!")
-        print(self.attributions["technicians"]) 
+        print(self.attributions_tecns) 
         print("\n")
 
     def do_GET(self):
@@ -149,7 +151,7 @@ class MyServer(BaseHTTPRequestHandler):
             print("Not handled")
             print(query_components)
         
-
+        print("Send response")
         self.send_response(200)
         self.send_header("Content-type", "application/json")
         self.send_header('Access-Control-Allow-Origin','*')
