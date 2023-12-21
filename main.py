@@ -3,7 +3,7 @@ from solver.solver import main_solver
 from output.write_output_excel import write_output
 from server.server import server_main
 
-path_input_excel = './input/states_V2.xlsm'
+path_input_excel = './states_experiences/states_V2.xlsm'
 test_frontend = False
 
 if __name__ == '__main__':
