@@ -137,7 +137,7 @@ class Excel_Information:
         for line in range(len(self.compatibilities)):
             for cell in range(len(self.compatibilities[line])):
                 if self.compatibilities[line][cell] == sys.maxsize:
-                    self.compatibilities[line][cell]= max_value+1
+                    self.compatibilities[line][cell]= max_value*5
         print("Results")
         print(self.compatibilities)
         print(self.projects_handled)
