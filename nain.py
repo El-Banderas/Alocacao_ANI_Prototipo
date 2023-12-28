@@ -6,7 +6,7 @@ from output.write_output_excel import write_output
 from output.write_info_excel import write_api_info_excel
 from server.server import server_main
 
-inputURL = 'http://127.0.0.1:1234'
+inputURL = 'https://ani-fake-api.onrender.com'
 path_input_excel = './states_experiences/states_V2.xlsm'
 test_frontend = False
 
