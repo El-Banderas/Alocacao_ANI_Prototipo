@@ -1,16 +1,19 @@
 # To run: uvicorn fakeAPI:app --reload --port 1234
 # To test: http://127.0.0.1:1234/projs on browser
+# http://127.0.0.1:1234
 
 from fastapi import FastAPI
 import json
 app = FastAPI()
 
 def read_json_file(path : str):
-    f = open(path)
+    f = open(path, encoding='utf-8')
  
     # returns JSON object as 
     # a dictionary
     data = json.load(f)
+    print("DATA")
+    print(data)
     f.close()
     return data
 
@@ -34,7 +37,7 @@ JSON Tecn:
   {
     ID: '{{index()}}',
     Nome: '{{firstName()}} {{surname()}}',
-    Data_vinculo: '{{date(new Date(2014, 0, 1), new Date(), "dd-MM-YYYYZ")}}'
+    Data_vinculo: '{{date(new Date(2014, 0, 1), new Date(), "dd-MM-YYYY")}}'
   }
 ]
 
