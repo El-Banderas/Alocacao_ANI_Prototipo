@@ -56,20 +56,13 @@ def insert_tecns_info(url : str, connection : Connection_BD):
     x = requests.get(f'{url}/tecns')
     response = x.json()
     for tecn in response:
-    #    new_tecn = Tech(service_year=1, id=tecn["ID"], availability=1, current_effort=0)
-    #    list_tecns.append(new_tecn)
         connection.do_command(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, '{tecn["Nome"]}', '{tecn["Data_vinculo"]}');")
 
 def insert_proms_info(url : str, connection : Connection_BD):
     x = requests.get(f'{url}/proms')
     response = x.json()
-    print("Proms?")
     for prom in response:
-    #    new_tecn = Tech(service_year=1, id=tecn["ID"], availability=1, current_effort=0)
-    #    list_tecns.append(new_tecn)
-        print(prom)
-        #connection.do_command(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, '{tecn["Nome"]}', '{tecn["Data_vinculo"]}');")
-    exit(0)
+        connection.do_command(f"INSERT INTO T_PROMOTOR VALUES({prom["ID"]}, '{prom["Nome"]}', {prom["NIPC"]}, '{prom["Representante"]}', '{prom["Contato"]}');")
 
 
 def insert_projs_info(url : str, connection : Connection_BD):
@@ -107,6 +100,15 @@ INSERT INTO T_PROJETO (Id_Projeto, Sigla_Projeto, Nome, Id_Tipologia, Id_Fase, I
 			VALUES({proj["ID"]}, '{proj["Sigla"]}', '{proj["Nome"]}', {convert_tipology_name_to_int(name=proj["Tipologia"])}, 
                     0, {id_area} , '{proj["Data_inicio"]}', '{proj["Data_fim"]}', 10, 20);
                               """)
+    
+    # Insert "promotores"
+    for proj in response:
+        main = 1
+        for id_prom in proj["ID_Promotores"]:
+
+            connection.do_command(f"INSERT INTO T_PROMOCAO (Id_Promotor, Id_Projeto, main) VALUES({id_prom},{proj["ID"]},{main});")
+            main = 0
+
 
 
 
@@ -122,11 +124,15 @@ def read_input_api(url : str) :
     insert_projs_info(url=url, connection=connection)
 
     print("Test projects stored")
-    rows = connection.do_command("Select * from T_TECNICO")
+    rows = connection.do_command("Select * from T_PROMOTOR")
     for row in rows:
         print(row)
     print("----")
     rows = connection.do_command("Select * from T_PROJETO")
+    for row in rows:
+        print(row)
+    print("----\nPromotores\n")
+    rows = connection.do_command("Select * from T_PROMOCAO ")
     for row in rows:
         print(row)
 
