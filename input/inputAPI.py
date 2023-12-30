@@ -110,6 +110,14 @@ INSERT INTO T_PROJETO (Id_Projeto, Sigla_Projeto, Nome, Id_Tipologia, Id_Fase, I
             main = 0
 
 
+def insert_default_preferences( connection : Connection_BD):
+    tecns_ids = connection.do_command("Select Id_Tecnico from T_TECNICO ")
+    areas = connection.do_command("Select Id_Area from T_AREA_TEMATICA  ")
+    for tecn_id in tecns_ids:
+        for area in areas:
+            connection.do_command(f"INSERT INTO T_PREFERENCIA (Id_Tecnico, Id_Area, Valor_Pref) VALUES({tecn_id[0]}, {area[0]}, 1);")
+
+    
 
 
 '''
@@ -122,6 +130,7 @@ def read_input_api(url : str) :
     insert_tecns_info(url=url, connection=connection)
     insert_proms_info(url=url, connection=connection)
     insert_projs_info(url=url, connection=connection)
+    insert_default_preferences( connection=connection)
 
     print("Test projects stored")
     rows = connection.do_command("Select * from T_PROMOTOR")
