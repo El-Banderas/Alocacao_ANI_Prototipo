@@ -11,7 +11,8 @@ test_frontend = False
 if __name__ == '__main__':
     # Here we also write to BD
     input = read_input_api(url=inputURL)
-    '''
+
+'''
     Isto aqui é o que está na main antiga, que em princípio se vai manter. 
     input = read_input(path_excel=path_input_excel)
 
@@ -22,4 +23,4 @@ if __name__ == '__main__':
             write_output(output=attribution, excel_path=path_input_excel, excel_input_info=input.excel_information)
     input.excel_information.get_projects_info()
     server_main(input=input)
-    '''
+'''
