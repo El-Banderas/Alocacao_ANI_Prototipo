@@ -56,15 +56,15 @@ def insert_tecns_info(url : str, connection : Connection_BD):
     x = requests.get(f'{url}/tecns')
     response = x.json()
     for tecn in response:
-        print("Before error: ", tecn["ID"])
-        print(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, '{tecn["Nome"]}', '{tecn["Data_vinculo"]}');")
-        connection.do_command(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, '{tecn["Nome"]}', '{tecn["Data_vinculo"]}');")
+        #print("Before error: ", tecn["ID"])
+        #print(f'INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, "{tecn["Nome"]}", "{tecn["Data_vinculo"]}");')
+        connection.do_command(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn['ID']}, '{tecn['Nome']}', '{tecn['Data_vinculo']}');")
 
 def insert_proms_info(url : str, connection : Connection_BD):
     x = requests.get(f'{url}/proms')
     response = x.json()
     for prom in response:
-        connection.do_command(f"INSERT INTO T_PROMOTOR VALUES({prom["ID"]}, '{prom["Nome"]}', {prom["NIPC"]}, '{prom["Representante"]}', '{prom["Contato"]}');")
+        connection.do_command(f"INSERT INTO T_PROMOTOR VALUES({prom['ID']}, '{prom['Nome']}', {prom['NIPC']}, '{prom['Representante']}', '{prom['Contato']}');")
 
 
 def insert_projs_info(url : str, connection : Connection_BD):
@@ -108,7 +108,7 @@ INSERT INTO T_PROJETO (Id_Projeto, Sigla_Projeto, Nome, Id_Tipologia, Id_Fase, I
         main = 1
         for id_prom in proj["ID_Promotores"]:
 
-            connection.do_command(f"INSERT INTO T_PROMOCAO (Id_Promotor, Id_Projeto, main) VALUES({id_prom},{proj["ID"]},{main});")
+            connection.do_command(f"INSERT INTO T_PROMOCAO (Id_Promotor, Id_Projeto, main) VALUES({id_prom},{proj['ID']},{main});")
             main = 0
 
 
