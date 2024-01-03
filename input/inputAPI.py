@@ -50,7 +50,9 @@ class Connection_BD:
             return rows
         finally:
             self.conn.commit()
-        
+    
+    def close_connection(self):
+        self.conn.close()    
 
 def insert_tecns_info(url : str, connection : Connection_BD):
     x = requests.get(f'{url}/tecns')
@@ -146,6 +148,7 @@ def read_input_api(url : str) :
     rows = connection.do_command("Select * from T_PROMOCAO ")
     for row in rows:
         print(row)
+    return connection
 
     
 def convert_area_name_to_int(name : str):
