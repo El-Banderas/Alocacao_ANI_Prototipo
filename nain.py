@@ -8,10 +8,10 @@ inputURL = 'https://ani-fake-api.onrender.com'
 path_input_excel = './states_experiences/states_V2.xlsm'
 test_frontend = False
 
-if __name__ == '__main__':
-    # Here we also write to BD
-    input = read_input_api(url=inputURL)
+# Here we also write to BD
+input = read_input_api(url=inputURL)
 
+print("Pass here?")
 '''
     Isto aqui é o que está na main antiga, que em princípio se vai manter. 
     input = read_input(path_excel=path_input_excel)

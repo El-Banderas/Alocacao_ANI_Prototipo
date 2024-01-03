@@ -56,6 +56,8 @@ def insert_tecns_info(url : str, connection : Connection_BD):
     x = requests.get(f'{url}/tecns')
     response = x.json()
     for tecn in response:
+        print("Before error: ", tecn["ID"])
+        print(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, '{tecn["Nome"]}', '{tecn["Data_vinculo"]}');")
         connection.do_command(f"INSERT INTO T_TECNICO (Id_Tecnico, Nome, Data_Vinculo) VALUES({tecn["ID"]}, '{tecn["Nome"]}', '{tecn["Data_vinculo"]}');")
 
 def insert_proms_info(url : str, connection : Connection_BD):
