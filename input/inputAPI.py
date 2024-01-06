@@ -43,7 +43,7 @@ def read_input_api(url : str) -> InputAPI:
     for proj in response:
 
         new_proj = Proj(id=proj["ID"], costAnalysis=-1, costAccomp=-1, 
-                        theme=convert_area_name_to_int(proj["Area_Tematica"]),
+                        theme=proj["Area_Tematica"],
                         nProm=proj["Tipologia"], currentPhase=0, analysis_tech=proj["Tec_analise"],
                         other_tech=proj["Tec_acompanhamento"]
                                                        )
