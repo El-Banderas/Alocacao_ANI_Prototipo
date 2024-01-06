@@ -47,6 +47,8 @@ def read_input_api(url : str) -> InputAPI:
                         nProm=proj["Tipologia"], currentPhase=0, analysis_tech=proj["Tec_analise"],
                         other_tech=proj["Tec_acompanhamento"]
                                                        )
+        new_proj.addDates(init_date=proj["Data_inicio"], end_date=proj["Data_fim"])    
+        new_proj.add_name(name=proj["Nome"])    
         list_projs.append(new_proj)
     join_stuff = InputAPI(list_projs=list_projs, list_tecns=list_tecns)
     return join_stuff
