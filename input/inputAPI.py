@@ -35,7 +35,7 @@ def read_input_api(url : str) -> InputAPI:
     list_tecns : list[Tech] = [] 
     list_projs : list[Proj] = [] 
     for tecn in response:
-        new_tecn = Tech(service_year=tecn["Data_vinculo"] id=tecn["ID"], availability=1, current_effort=0, name=tecn["Nome"])
+        new_tecn = Tech(service_year=tecn["Data_vinculo"], id=tecn["ID"], availability=1, current_effort=0, name=tecn["Nome"])
         list_tecns.append(new_tecn)
 
     x = requests.get(f'{url}/projs')
