@@ -8,23 +8,46 @@ import statistics
 
 ######################################### READ EXCEL ################################################
 # load excel with its path 
-wrkbk = openpyxl.load_workbook("Dados Exemplos.xlsx", data_only=True) 
+wrkbk = openpyxl.load_workbook("ZéPaulo.xlsx", data_only=True) 
 
-sh_projs = wrkbk["Candidaturas"] 
+sh_projs = wrkbk["Output AS-IS"] 
 
 projetos_organizados_por_meses = {}
 
-# iterate through excel and display data 
-for row in sh_projs.iter_rows(min_row=3, min_col=1): 
-    month_this_line = row[pos_mes].value
-    # Matrix row in costs starts in 0, index in this sheet begins in 1
-    row_proj = row[pos_id].value -1
-    cost = row[pos_cost].value
-    if month_this_line in projetos_organizados_por_meses:
-        projetos_organizados_por_meses[month_this_line].append(row_proj)
-    else:
-        projetos_organizados_por_meses[month_this_line] = [row_proj]
+# ID -> Cost anal
+costs_anal = {}
+# ID -> Cost accomp
+costs_accomp = {}
 
+# Key -> Proj id , value -> tecn_anal
+projetos_alocacoes = {}
+
+# iterate through excel and display data 
+for row in sh_projs.iter_rows(min_row=2): 
+    month_anal = row[pos_init_date].value.strftime("%m/%d/%Y")
+    month_accomp = row[pos_accomp_date].value.strftime("%m/%d/%Y")
+    # Matrix row in costs starts in 0, index in this sheet begins in 1
+    row_proj = row[pos_id].value 
+    costs_anal[row_proj] = row[pos_cost_an].value
+    costs_accomp[row_proj] = row[pos_cost_accomp].value
+    if month_anal in projetos_organizados_por_meses:
+        projetos_organizados_por_meses[month_anal].append(f"A{row_proj}")
+    else:
+        projetos_organizados_por_meses[month_anal] = [f"A{row_proj}"]
+    if month_accomp in projetos_organizados_por_meses:
+        projetos_organizados_por_meses[month_accomp].append(f"B{row_proj}")
+    else:
+        projetos_organizados_por_meses[month_accomp] = [f"B{row_proj}"]
+    
+matrix_aptitude = []
+
+
+
+print("Meses")
+print(projetos_organizados_por_meses)
+print(costs_anal)
+print(costs_accomp)
+exit(0)
 sh_matrix = wrkbk["Matriz Total"] 
 print("\n\n\nMatriz total")
 matrix_aptitude = []
