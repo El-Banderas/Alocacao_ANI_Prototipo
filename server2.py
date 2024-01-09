@@ -37,6 +37,9 @@ async def root():
     print(areas)
     return {"message": areas}
 
+# Get info of projects, so the user can change efforts of projects
+# That info will be used for allocation 
+# This should only send the projects that need alocation
 @app.get("/proj_cost")
 async def root():
     print("AQUI")
@@ -44,11 +47,10 @@ async def root():
     print(projects)
     return projects
 
-class Project1(BaseModel):
-    name: str
-
+# Used for confirmation, to frontend
 class Project2(BaseModel):
     name2: str
+
 class Project(BaseModel):
     area: str
     effort_accomp: int
@@ -60,6 +62,8 @@ class Project(BaseModel):
 class ListProjects(BaseModel):
     projects: list[Project]
 
+# When user changes efforts of projects. This could trigger allocation
+# So the user doesn't has to wait for allocation
 @app.put("/add_efforts", response_model=Project2)
 async def add_efforts(projects : ListProjects):
     print("PUT")
