@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from input.inputAPI import Connection_BD
 from input.inputAPI import read_input_api
-
- # uvicorn fakeAPI:app --reload --port 10000 --host 0.0.0.0
+from serverQueries.getProjectsForCosts import get_Projects_For_Costs
+ # uvicorn server2:app --reload --port 10000 
 inputURL = 'https://ani-fake-api.onrender.com'
 
 # Here we also write to BD
@@ -25,6 +25,6 @@ async def root():
 @app.get("/proj_cost")
 async def root():
     print("AQUI")
-    projects = bd.do_command("Select * from T_PROJETO  ")
+    projects = get_Projects_For_Costs(bd=bd)
     print(projects)
     return {"message": projects}
